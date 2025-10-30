@@ -3,13 +3,13 @@ const rows = 12;
 const cols = 12;
 const sensorKeys = ['co', 'co2', 'nh3', 'no2', 'humidity', 'bmp_temp'];
 
-// --- Création de la grille 12x12 avec blobs ---
+// --- Création de la grille 12x12 ---
 function setupGrid() {
-  lavaGrid.innerHTML = ''; // réinitialise si nécessaire
+  lavaGrid.innerHTML = ''; // nettoyer si déjà existant
   lavaGrid.style.display = 'grid';
   lavaGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
   lavaGrid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-  lavaGrid.style.gap = '1vmin';
+  lavaGrid.style.gap = '0.5vmin';
 
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
@@ -17,7 +17,7 @@ function setupGrid() {
       cell.classList.add('cell');
       cell.style.position = 'relative';
       cell.style.width = '100%';
-      cell.style.aspectRatio = '1 / 1'; // carré
+      cell.style.height = '100%';
 
       sensorKeys.forEach(key => {
         const blob = document.createElement('div');
@@ -38,57 +38,77 @@ function setupGrid() {
   }
 }
 
-// --- Fonctions utilitaires ---
+// --- Utilitaires ---
 function normalize(value, min, max) {
   return Math.max(0, Math.min(1, (value - min) / (max - min)));
 }
 
-function valueToColor(sensor, value) {
-  const norm = normalize(value, sensorMin[sensor], sensorMax[sensor]);
-  if (norm < 0.25) return '#00ff00';
-  if (norm < 0.5) return '#ffff00';
-  if (norm < 0.75) return '#ff8000';
-  return '#ff0040';
-}
-
-function valueToBlur(sensor, value, cellSize) {
-  const norm = normalize(value, sensorMin[sensor], sensorMax[sensor]);
-  return (5 + norm * 20) * (cellSize / 120); // proportionnel à la taille de la cellule
-}
-
-function valueToOpacity(sensor, value) {
-  return normalize(value, sensorMin[sensor], sensorMax[sensor]) * 0.8 + 0.2; // 0.2 → 1
-}
-
-// --- Définir min/max par capteur ---
 const sensorMin = { co: 0, co2: 350, nh3: 0, no2: 0, humidity: 0, bmp_temp: 15 };
 const sensorMax = { co: 1, co2: 500, nh3: 1.5, no2: 1, humidity: 100, bmp_temp: 30 };
 
-// --- Mise à jour des blobs avec une nouvelle mesure ---
-function updateGridWithJSON(latestDataArray) {
-  const cells = document.querySelectorAll('.cell');
-  cells.forEach((cell, idx) => {
-    const blobs = cell.querySelectorAll('.blob');
-    const dataItem = latestDataArray[idx] || {};
-    const cellSize = cell.getBoundingClientRect().width;
+function valueToColor(sensor, value) {
+  const norm = normalize(value, sensorMin[sensor], sensorMax[sensor]);
+  switch (sensor) {
+    case 'co': return '#FF4400';
+    case 'co2': return '#23E6F7';
+    case 'nh3': return '#FFDD00';
+    case 'no2': return '#00FF80';
+    case 'humidity': return '#FF00FF';
+    case 'bmp_temp': return '#0080FF';
+    default: return '#FFFFFF';
+  }
+}
 
-    blobs.forEach(blob => {
+function valueToOpacity(sensor, value) {
+  const norm = normalize(value, sensorMin[sensor], sensorMax[sensor]);
+  return 0.3 + 0.7 * norm; // entre 0.3 et 1
+}
+
+function valueToBlur(sensor, value, blobSize) {
+  const norm = normalize(value, sensorMin[sensor], sensorMax[sensor]);
+  return blobSize * 0.05 + norm * blobSize * 0.15; // proportionnel à la taille
+}
+
+// --- Mise à jour de la grille ---
+function updateGridWithJSON(flattenedData) {
+  const cells = document.querySelectorAll('.cell');
+  cells.forEach((cell, cellIdx) => {
+    const blobs = cell.querySelectorAll('.blob');
+    blobs.forEach((blob, blobIdx) => {
+      const index = cellIdx * sensorKeys.length + blobIdx;
+      const dataItem = flattenedData[index] || {};
       const key = blob.dataset.sensor;
       const value = dataItem[key] ?? 0;
+
       blob.style.background = valueToColor(key, value);
-      blob.style.filter = `blur(${valueToBlur(key, value, cellSize)}px)`;
       blob.style.opacity = valueToOpacity(key, value);
+      const blobSize = cell.getBoundingClientRect().width;
+      blob.style.width = `${blobSize}px`;
+      blob.style.height = `${blobSize}px`;
+      blob.style.filter = `blur(${valueToBlur(key, value, blobSize)}px)`;
     });
   });
 }
 
-// --- Récupération du flux JSON ---
+// --- Récupération des données ---
 async function fetchLatestData() {
   try {
     const response = await fetch('https://server-online-1.onrender.com/sensor');
     const data = await response.json();
+
+    // On prend les 144 dernières lignes (12x12)
     const latest144 = data.slice(-144);
-    updateGridWithJSON(latest144);
+
+    // Aplatir pour 12*12*6 = 864 blobs
+    const flattenedData = [];
+    latest144.forEach(item => {
+      sensorKeys.forEach(key => {
+        flattenedData.push({ [key]: item[key], timestamp: item.timestamp });
+      });
+    });
+
+    updateGridWithJSON(flattenedData);
+
   } catch (err) {
     console.error('Erreur fetch JSON:', err);
   }
@@ -98,17 +118,4 @@ async function fetchLatestData() {
 setupGrid();
 fetchLatestData();
 setInterval(fetchLatestData, 5000);
-
-// --- Ajuster la taille des blobs si la fenêtre change ---
-window.addEventListener('resize', () => {
-  const cells = document.querySelectorAll('.cell');
-  cells.forEach(cell => {
-    const blobs = cell.querySelectorAll('.blob');
-    const cellSize = cell.getBoundingClientRect().width;
-    blobs.forEach(blob => {
-      // redimensionne le blob proportionnellement à la cellule
-      blob.style.width = `${cellSize * 0.9}px`;
-      blob.style.height = `${cellSize * 0.9}px`;
-    });
-  });
-});
+window.addEventListener('resize', () => updateGridWithJSON([])); // redimensionner blobs
