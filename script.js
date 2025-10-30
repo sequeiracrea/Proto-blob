@@ -2,10 +2,11 @@ const lavaGrid = document.querySelector('.lava-grid');
 const rows = 12;
 const cols = 12;
 const sensorKeys = ['co', 'co2', 'nh3', 'no2', 'humidity', 'bmp_temp'];
+let latestFlattenedData = [];
 
 // --- Création de la grille 12x12 ---
 function setupGrid() {
-  lavaGrid.innerHTML = ''; // nettoyer si déjà existant
+  lavaGrid.innerHTML = '';
   lavaGrid.style.display = 'grid';
   lavaGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
   lavaGrid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
@@ -47,7 +48,6 @@ const sensorMin = { co: 0, co2: 350, nh3: 0, no2: 0, humidity: 0, bmp_temp: 15 }
 const sensorMax = { co: 1, co2: 500, nh3: 1.5, no2: 1, humidity: 100, bmp_temp: 30 };
 
 function valueToColor(sensor, value) {
-  const norm = normalize(value, sensorMin[sensor], sensorMax[sensor]);
   switch (sensor) {
     case 'co': return '#FF4400';
     case 'co2': return '#23E6F7';
@@ -61,12 +61,12 @@ function valueToColor(sensor, value) {
 
 function valueToOpacity(sensor, value) {
   const norm = normalize(value, sensorMin[sensor], sensorMax[sensor]);
-  return 0.3 + 0.7 * norm; // entre 0.3 et 1
+  return 0.3 + 0.7 * norm;
 }
 
 function valueToBlur(sensor, value, blobSize) {
   const norm = normalize(value, sensorMin[sensor], sensorMax[sensor]);
-  return blobSize * 0.05 + norm * blobSize * 0.15; // proportionnel à la taille
+  return blobSize * 0.05 + norm * blobSize * 0.15;
 }
 
 // --- Mise à jour de la grille ---
@@ -82,6 +82,7 @@ function updateGridWithJSON(flattenedData) {
 
       blob.style.background = valueToColor(key, value);
       blob.style.opacity = valueToOpacity(key, value);
+
       const blobSize = cell.getBoundingClientRect().width;
       blob.style.width = `${blobSize}px`;
       blob.style.height = `${blobSize}px`;
@@ -96,18 +97,14 @@ async function fetchLatestData() {
     const response = await fetch('https://server-online-1.onrender.com/sensor');
     const data = await response.json();
 
-    // On prend les 144 dernières lignes (12x12)
-    const latest144 = data.slice(-144);
-
-    // Aplatir pour 12*12*6 = 864 blobs
+    const latest864 = data.slice(-864);
     const flattenedData = [];
-    latest144.forEach(item => {
-      sensorKeys.forEach(key => {
-        flattenedData.push({ [key]: item[key], timestamp: item.timestamp });
-      });
+    latest864.forEach(item => {
+      sensorKeys.forEach(key => flattenedData.push({ [key]: item[key], timestamp: item.timestamp }));
     });
 
-    updateGridWithJSON(flattenedData);
+    latestFlattenedData = flattenedData;
+    updateGridWithJSON(latestFlattenedData);
 
   } catch (err) {
     console.error('Erreur fetch JSON:', err);
@@ -118,4 +115,4 @@ async function fetchLatestData() {
 setupGrid();
 fetchLatestData();
 setInterval(fetchLatestData, 5000);
-window.addEventListener('resize', () => updateGridWithJSON([])); // redimensionner blobs
+window.addEventListener('resize', () => updateGridWithJSON(latestFlattenedData));
