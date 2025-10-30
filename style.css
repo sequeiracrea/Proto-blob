@@ -1,4 +1,4 @@
-/* ----- Reset & structure de base ----- */
+/* ----- Reset et structure de base ----- */
 html, body {
   height: 100%;
   margin: 0;
@@ -9,16 +9,14 @@ html, body {
   font-family: sans-serif;
 }
 
-/* ----- Grille responsive ----- */
+/* ----- Grille de blobs ----- */
 .lava-grid {
-  display: grid; /* Grid défini également via JS */
-  width: 95vw; /* Toujours rentrer dans la largeur */
-  max-width: 1000px;
-  height: auto;
-  aspect-ratio: 1; /* carré parfait */
+  display: grid; /* défini via JS aussi */
   justify-items: center;
   align-items: center;
   gap: 0.5vmin;
+  width: 95vw; /* toujours dans la largeur de l'écran */
+  max-width: 95vh; /* limite hauteur si écran très vertical */
 }
 
 /* ----- Chaque cellule ----- */
