@@ -88,16 +88,21 @@ async function fetchLatestData() {
     const response = await fetch('https://server-online-1.onrender.com/sensor');
     const data = await response.json();
 
-    // On prend les 144 dernières lignes (12x12) et 6 blobs par cellule → 864
-    const latest864 = data.slice(-144); 
-    const flattenedData = [];
-    latest864.forEach(item => {
-      sensorKeys.forEach(key => flattenedData.push({ [key]: item[key], timestamp: item.timestamp }));
+    // transformer chaque ligne en 6 blobs
+    const newFlattened = [];
+    data.forEach(item => {
+      sensorKeys.forEach(key => newFlattened.push({ [key]: item[key], timestamp: item.timestamp }));
     });
 
-    latestFlattenedData = flattenedData;
-    updateGridWithJSON(latestFlattenedData);
+    // ajouter uniquement les nouvelles données
+    latestFlattenedData = latestFlattenedData.concat(newFlattened);
 
+    // conserver les 864 dernières valeurs
+    if (latestFlattenedData.length > 864) {
+      latestFlattenedData = latestFlattenedData.slice(-864);
+    }
+
+    updateGridWithJSON(latestFlattenedData);
   } catch (err) {
     console.error('Erreur fetch JSON:', err);
   }
