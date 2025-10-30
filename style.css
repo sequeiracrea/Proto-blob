@@ -1,0 +1,77 @@
+/* style.css */
+
+/* ----- Reset et structure de base ----- */
+html, body {
+  height: 100%;
+  margin: 0;
+  background: #0a0a0a;
+  overflow: visible;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: sans-serif;
+}
+
+/* ----- Calques de fusion globaux ----- */
+.color-burn-layer,
+.color-dodge-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.color-burn-layer {
+  background: radial-gradient(circle at 30% 40%, #ff0040, transparent 60%),
+              radial-gradient(circle at 70% 60%, #00ffff, transparent 60%);
+  mix-blend-mode: color-burn;
+  opacity: 0.7;
+}
+
+.color-dodge-layer {
+  background: radial-gradient(circle at 50% 50%, #23e6f7, transparent 70%);
+  mix-blend-mode: color-dodge;
+  opacity: 0.35;
+}
+
+/* ----- Grille de blobs ----- */
+.lava-grid {
+  display: grid; /* grid défini via JS aussi */
+  justify-items: center;
+  align-items: center;
+  gap: 2vmin;
+}
+
+/* ----- Chaque cellule ----- */
+.cell {
+  position: relative;
+  width: 12vmin;
+  height: 12vmin;
+}
+
+/* ----- Blobs superposés ----- */
+.blob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 12vmin;
+  height: 12vmin;
+  border-radius: 50%;
+  opacity: 0.7;
+  mix-blend-mode: screen;
+  transition: background 0.5s, filter 0.5s;
+}
+
+/* Optionnel : style du body pendant chargement */
+body::before {
+  content: "Loading...";
+  color: #fff;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1rem;
+  z-index: 10;
+}
+
