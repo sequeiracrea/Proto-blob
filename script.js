@@ -92,7 +92,7 @@ function updateGridWithJSON(latestDataArray) {
 // --- Récupération du flux JSON ---
 async function fetchLatestData() {
   try {
-    const response = await fetch('/sensor'); // ton endpoint Render
+    const response = await fetch('https://server-online-1.onrender.com/sensor'); // ton endpoint Render
     const contentType = response.headers.get("content-type");
 
     if (!contentType || !contentType.includes("application/json")) {
@@ -116,3 +116,4 @@ setupGrid();
 window.addEventListener('resize', setupGrid);
 setInterval(fetchLatestData, 5000);
 fetchLatestData(); // initial
+
