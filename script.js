@@ -80,9 +80,11 @@ function updateGridWithJSON(latestDataArray) {
 }
 
 // --- Récupération du flux JSON ---
+let currentCellIndex = 0; // cellule à remplir
+
 async function fetchLatestData() {
   try {
-    const response = await fetch('https://server-online-1.onrender.com/sensor');
+    const response = await fetch('/sensor');
 
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
@@ -93,16 +95,32 @@ async function fetchLatestData() {
 
     const data = await response.json();
 
-    // Sélectionne les 144 dernières mesures (pour 12x12)
-    const latest144 = data.slice(-144);
-    updateGridWithJSON(latest144);
+    // On prend la **nouvelle mesure la plus récente**
+    const latest = data[data.length - 1];
+    if (!latest) return;
 
-    console.log("✅ Données mises à jour :", latest144[latest144.length - 1]);
+    // Remplir la cellule suivante
+    const cells = document.querySelectorAll('.cell');
+    if (currentCellIndex >= cells.length) currentCellIndex = 0; // optionnel : boucler
+    const cell = cells[currentCellIndex];
+    const blobs = cell.querySelectorAll('.blob');
+
+    blobs.forEach(blob => {
+      const key = blob.dataset.sensor;
+      const value = latest[key] ?? 0;
+      blob.style.background = valueToColor(key, value);
+      blob.style.filter = `blur(${valueToBlur(key, value)}px)`;
+      blob.style.transition = 'background 0.5s, filter 0.5s';
+    });
+
+    currentCellIndex++; // passer à la cellule suivante
+
+    console.log(`✅ Données mises à jour dans la cellule ${currentCellIndex}`, latest);
+
   } catch (err) {
     console.error('❌ Erreur fetch JSON:', err);
   }
 }
 
-// --- Rafraîchir toutes les 5 secondes ---
 setInterval(fetchLatestData, 5000);
 fetchLatestData(); // initial
