@@ -38,11 +38,8 @@ html, body {
   display: grid;
   justify-items: center;
   align-items: center;
-  gap: 1%; /* espace entre cellules */
   width: 90vw; /* largeur max 90% de l’écran */
   height: 90vh; /* hauteur max 90% de l’écran */
-  max-width: 800px; /* optionnel, limite la taille totale */
-  max-height: 800px; /* optionnel */
   margin: auto; /* centre la grille */
 }
 
@@ -66,6 +63,7 @@ html, body {
   mix-blend-mode: screen;
   transition: background 0.5s, filter 0.5s;
 }
+
 
 
 
