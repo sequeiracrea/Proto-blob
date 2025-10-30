@@ -3,6 +3,7 @@ const rows = 12;
 const cols = 12;
 const sensorKeys = ['co', 'co2', 'nh3', 'no2', 'humidity', 'bmp_temp'];
 let currentCellIndex = 0; // cellule suivante à mettre à jour
+let latestData = [];       // stocke toutes les données reçues
 
 // --- Création de la grille 12x12 ---
 function setupGrid() {
@@ -80,14 +81,15 @@ async function fetchLatestData() {
   try {
     const response = await fetch('https://server-online-1.onrender.com/sensor');
     const data = await response.json();
+    latestData = data; // garder toutes les données
 
-    // prendre le prochain lot (6 valeurs) pour la cellule courante
-    const nextData = data[currentCellIndex % data.length]; 
-    const cell = lavaGrid.children[currentCellIndex % (rows*cols)];
-
-    updateCell(cell, nextData);
-
-    currentCellIndex++;
+    // mettre à jour la cellule suivante uniquement
+    if (currentCellIndex < rows * cols) {
+      const cell = lavaGrid.children[currentCellIndex];
+      const dataItem = data[currentCellIndex % data.length]; // prend les données dans l'ordre
+      updateCell(cell, dataItem);
+      currentCellIndex++;
+    }
   } catch (err) {
     console.error('Erreur fetch JSON:', err);
   }
@@ -95,4 +97,14 @@ async function fetchLatestData() {
 
 // --- Initialisation ---
 setupGrid();
+fetchLatestData();
 setInterval(fetchLatestData, 5000);
+
+// --- Responsive ---
+window.addEventListener('resize', () => {
+  for (let i = 0; i < currentCellIndex; i++) {
+    const cell = lavaGrid.children[i];
+    const dataItem = latestData[i % latestData.length];
+    updateCell(cell, dataItem);
+  }
+});
