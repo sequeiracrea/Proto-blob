@@ -79,7 +79,7 @@ function updateCellWithData(cell, dataItem) {
 // --- Récupération du flux JSON ---
 async function fetchLatestData() {
   try {
-    const response = await fetch('/sensor');
+    const response = await fetch('https://server-online-1.onrender.com/sensor');
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
       const text = await response.text();
@@ -108,3 +108,4 @@ async function fetchLatestData() {
 // --- Rafraîchir toutes les 5 secondes ---
 setInterval(fetchLatestData, 5000);
 fetchLatestData(); // initial
+
