@@ -74,7 +74,7 @@ function addNewBlobs(latestDataArray) {
 // --- Fetch ---
 async function fetchLatestData() {
   try {
-    const response = await fetch('/sensor');
+    const response = await fetch('https://server-online-1.onrender.com/sensor');
     const data = await response.json();
 
     const latestData = data.slice(-12); // exemple : les 12 dernières mesures
@@ -87,3 +87,4 @@ async function fetchLatestData() {
 
 setInterval(fetchLatestData, 5000);
 fetchLatestData();
+
