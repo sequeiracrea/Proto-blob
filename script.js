@@ -81,9 +81,13 @@ async function fetchLatestData() {
     const response = await fetch('https://server-online-1.onrender.com/sensor');
     const data = await response.json();
 
-    // prendre le prochain lot (6 valeurs) pour la cellule courante
+    if (currentCellIndex >= rows * cols) {
+      // toutes les cellules sont remplies, on peut arrêter ou recommencer
+      return; // stop
+    }
+
     const nextData = data[currentCellIndex % data.length]; 
-    const cell = lavaGrid.children[currentCellIndex % (rows*cols)];
+    const cell = lavaGrid.children[currentCellIndex];
 
     updateCell(cell, nextData);
 
@@ -93,6 +97,8 @@ async function fetchLatestData() {
   }
 }
 
+
 // --- Initialisation ---
 setupGrid();
 setInterval(fetchLatestData, 5000);
+
