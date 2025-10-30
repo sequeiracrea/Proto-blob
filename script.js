@@ -16,21 +16,11 @@ function setupGrid() {
     for (let c = 0; c < cols; c++) {
       const cell = document.createElement('div');
       cell.classList.add('cell');
-      cell.style.position = 'relative';
-      cell.style.width = '100%';
-      cell.style.height = '100%';
 
       sensorKeys.forEach(key => {
         const blob = document.createElement('div');
         blob.classList.add('blob');
         blob.dataset.sensor = key;
-        blob.style.position = 'absolute';
-        blob.style.top = '50%';
-        blob.style.left = '50%';
-        blob.style.transform = 'translate(-50%, -50%)';
-        blob.style.borderRadius = '50%';
-        blob.style.mixBlendMode = 'screen';
-        blob.style.transition = 'background 0.5s, filter 0.5s, opacity 0.5s';
         cell.appendChild(blob);
       });
 
@@ -72,6 +62,9 @@ function valueToBlur(sensor, value, blobSize) {
 // --- Mise à jour de la grille ---
 function updateGridWithJSON(flattenedData) {
   const cells = document.querySelectorAll('.cell');
+  const lavaWidth = lavaGrid.getBoundingClientRect().width;
+  const blobSize = lavaWidth / cols;
+
   cells.forEach((cell, cellIdx) => {
     const blobs = cell.querySelectorAll('.blob');
     blobs.forEach((blob, blobIdx) => {
@@ -82,8 +75,6 @@ function updateGridWithJSON(flattenedData) {
 
       blob.style.background = valueToColor(key, value);
       blob.style.opacity = valueToOpacity(key, value);
-
-      const blobSize = cell.getBoundingClientRect().width;
       blob.style.width = `${blobSize}px`;
       blob.style.height = `${blobSize}px`;
       blob.style.filter = `blur(${valueToBlur(key, value, blobSize)}px)`;
@@ -97,7 +88,8 @@ async function fetchLatestData() {
     const response = await fetch('https://server-online-1.onrender.com/sensor');
     const data = await response.json();
 
-    const latest864 = data.slice(-864);
+    // On prend les 144 dernières lignes (12x12) et 6 blobs par cellule → 864
+    const latest864 = data.slice(-144); 
     const flattenedData = [];
     latest864.forEach(item => {
       sensorKeys.forEach(key => flattenedData.push({ [key]: item[key], timestamp: item.timestamp }));
