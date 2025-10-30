@@ -61,31 +61,25 @@ function valueToBlur(sensor, value) {
 const sensorMin = { co: 0, co2: 350, nh3: 0, no2: 0, humidity: 0, bmp_temp: 15 };
 const sensorMax = { co: 1, co2: 500, nh3: 1.5, no2: 1, humidity: 100, bmp_temp: 30 };
 
-// --- Mise à jour des blobs avec une nouvelle mesure ---
-function updateGridWithJSON(latestDataArray) {
-  const cells = document.querySelectorAll('.cell');
+// --- Index global pour cellule ---
+let currentCellIndex = 0;
 
-  cells.forEach((cell, idx) => {
-    const blobs = cell.querySelectorAll('.blob');
-    const dataItem = latestDataArray[idx] || {};
-
-    blobs.forEach(blob => {
-      const key = blob.dataset.sensor;
-      const value = dataItem[key] ?? 0;
-      blob.style.background = valueToColor(key, value);
-      blob.style.filter = `blur(${valueToBlur(key, value)}px)`;
-      blob.style.transition = 'background 0.5s, filter 0.5s';
-    });
+// --- Mise à jour d’une seule cellule ---
+function updateCellWithData(cell, dataItem) {
+  const blobs = cell.querySelectorAll('.blob');
+  blobs.forEach(blob => {
+    const key = blob.dataset.sensor;
+    const value = dataItem[key] ?? 0;
+    blob.style.background = valueToColor(key, value);
+    blob.style.filter = `blur(${valueToBlur(key, value)}px)`;
+    blob.style.transition = 'background 0.5s, filter 0.5s';
   });
 }
 
 // --- Récupération du flux JSON ---
-let currentCellIndex = 0; // cellule à remplir
-
 async function fetchLatestData() {
   try {
     const response = await fetch('/sensor');
-
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
       const text = await response.text();
@@ -94,33 +88,23 @@ async function fetchLatestData() {
     }
 
     const data = await response.json();
-
-    // On prend la **nouvelle mesure la plus récente**
     const latest = data[data.length - 1];
     if (!latest) return;
 
-    // Remplir la cellule suivante
     const cells = document.querySelectorAll('.cell');
-    if (currentCellIndex >= cells.length) currentCellIndex = 0; // optionnel : boucler
     const cell = cells[currentCellIndex];
-    const blobs = cell.querySelectorAll('.blob');
+    updateCellWithData(cell, latest);
 
-    blobs.forEach(blob => {
-      const key = blob.dataset.sensor;
-      const value = latest[key] ?? 0;
-      blob.style.background = valueToColor(key, value);
-      blob.style.filter = `blur(${valueToBlur(key, value)}px)`;
-      blob.style.transition = 'background 0.5s, filter 0.5s';
-    });
+    currentCellIndex++;
+    if (currentCellIndex >= cells.length) currentCellIndex = 0; // boucle la grille si plein
 
-    currentCellIndex++; // passer à la cellule suivante
-
-    console.log(`✅ Données mises à jour dans la cellule ${currentCellIndex}`, latest);
+    console.log(`✅ Mise à jour cellule ${currentCellIndex}`, latest);
 
   } catch (err) {
     console.error('❌ Erreur fetch JSON:', err);
   }
 }
 
+// --- Rafraîchir toutes les 5 secondes ---
 setInterval(fetchLatestData, 5000);
 fetchLatestData(); // initial
