@@ -22,16 +22,15 @@ html, body {
 }
 
 .color-burn-layer {
-  background: radial-gradient(circle at 30% 40%, #ff0040, transparent 60%),
-              radial-gradient(circle at 70% 60%, #00ffff, transparent 60%);
+  background-color: #FF4400; /* couleur fixe */
+  opacity: 0.8;               /* opacité réduite */
   mix-blend-mode: color-burn;
-  opacity: 0.7;
 }
 
 .color-dodge-layer {
-  background: radial-gradient(circle at 50% 50%, #23e6f7, transparent 70%);
+  background-color: #0E68DE; /* couleur fixe */
+  opacity: 0.8;
   mix-blend-mode: color-dodge;
-  opacity: 0.35;
 }
 
 /* ----- Grille de blobs ----- */
@@ -67,6 +66,7 @@ html, body {
   mix-blend-mode: screen;
   transition: background 0.5s, filter 0.5s;
 }
+
 
 
 
