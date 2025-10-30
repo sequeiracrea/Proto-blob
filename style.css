@@ -68,16 +68,5 @@ html, body {
   transition: background 0.5s, filter 0.5s;
 }
 
-/* Optionnel : style du body pendant chargement */
-body::before {
-  content: "Loading...";
-  color: #fff;
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 1rem;
-  z-index: 10;
-}
 
 
