@@ -1,18 +1,51 @@
-/* style.css */
-
-/* ----- Reset et structure de base ----- */
+/* ----- Reset et base ----- */
 html, body {
   height: 100%;
   margin: 0;
   background: #0a0a0a;
-  overflow: visible;
+  font-family: sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: sans-serif;
+  overflow: hidden;
 }
 
-/* ----- Calques de fusion globaux ----- */
+/* ----- Grille responsive ----- */
+.lava-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
+  gap: 1vmin;
+  width: 90vw;       /* Toujours max 90% de la largeur écran */
+  max-width: 1200px; /* Limite sur grands écrans */
+  aspect-ratio: 1;   /* Carré */
+  justify-items: center;
+  align-items: center;
+}
+
+/* ----- Chaque cellule ----- */
+.cell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* ----- Blobs ----- */
+.blob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  transition: background 0.5s, filter 0.5s, opacity 0.5s;
+
+  /* Taille initiale max, sera recalculée via JS selon cellule */
+  width: 100%;
+  height: 100%;
+}
+
+/* ----- Calques de fusion globaux (optionnel) ----- */
 .color-burn-layer,
 .color-dodge-layer {
   position: fixed;
@@ -22,54 +55,13 @@ html, body {
 }
 
 .color-burn-layer {
-  background-color: #FF4400; /* couleur fixe */
-  opacity: 0.8;               /* opacité réduite */
+  background: #FF4400;
   mix-blend-mode: color-burn;
+  opacity: 0.8;
 }
 
 .color-dodge-layer {
-  background-color: #0E68DE; /* couleur fixe */
-  opacity: 0.8;
+  background: #0E68DE;
   mix-blend-mode: color-dodge;
+  opacity: 0.8;
 }
-
-
-/* ----- Grille de blobs responsive ----- */
-.lava-grid {
-  display: grid;
-  justify-items: center;
-  align-items: center;
-  gap: 1vmin; /* réduit le gap pour mieux tenir dans la largeur */
-  width: 95vw; /* largeur maximale 95% de l'écran */
-  max-width: 1200px; /* optionnel : ne pas dépasser une largeur fixe */
-  margin: 0 auto;
-  grid-template-columns: repeat(12, 1fr); /* 12 colonnes égales */
-}
-
-/* ----- Chaque cellule ----- */
-.cell {
-  position: relative;
-  width: 100%;  /* la cellule prend toute la largeur de sa colonne */
-  aspect-ratio: 1 / 1; /* conserve un carré */
-}
-
-/* ----- Blobs superposés ----- */
-.blob {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;   /* la taille du blob s'adapte à la cellule */
-  height: 90%;
-  border-radius: 50%;
-  opacity: 0.7;
-  mix-blend-mode: screen;
-  transition: background 0.5s, filter 0.5s, opacity 0.5s;
-}
-
-
-
-
-
-
-
