@@ -2,7 +2,7 @@ const lavaGrid = document.querySelector('.lava-grid');
 const rows = 12;
 const cols = 12;
 const sensorKeys = ['co', 'co2', 'nh3', 'no2', 'humidity', 'bmp_temp'];
-let latestData = [];
+let currentCellIndex = 0; // cellule suivante à mettre à jour
 
 // --- Création de la grille 12x12 ---
 function setupGrid() {
@@ -21,13 +21,6 @@ function setupGrid() {
         const blob = document.createElement('div');
         blob.classList.add('blob');
         blob.dataset.sensor = key;
-        blob.style.position = 'absolute';
-        blob.style.top = '50%';
-        blob.style.left = '50%';
-        blob.style.transform = 'translate(-50%, -50%)';
-        blob.style.borderRadius = '50%';
-        blob.style.mixBlendMode = 'screen';
-        blob.style.transition = 'background 0.5s, filter 0.5s, opacity 0.5s';
         cell.appendChild(blob);
       });
 
@@ -66,27 +59,19 @@ function valueToBlur(sensor, value, blobSize) {
   return blobSize * 0.05 + norm * blobSize * 0.15;
 }
 
-// --- Mise à jour de la grille ---
-function updateGridWithJSON(dataArray) {
-  const cells = document.querySelectorAll('.cell');
-  const lavaWidth = lavaGrid.getBoundingClientRect().width;
-  const blobSize = lavaWidth / cols;
+// --- Mettre à jour une cellule avec un lot de 6 données ---
+function updateCell(cell, dataItem) {
+  const blobs = cell.querySelectorAll('.blob');
+  const cellSize = cell.getBoundingClientRect().width;
 
-  // Pour chaque cellule, prendre le groupe de 6 valeurs correspondant
-  cells.forEach((cell, cellIdx) => {
-    const blobs = cell.querySelectorAll('.blob');
-    const dataItem = dataArray[cellIdx] || {}; // un objet avec 6 clés
-
-    blobs.forEach(blob => {
-      const key = blob.dataset.sensor;
-      const value = dataItem[key] ?? 0;
-
-      blob.style.background = valueToColor(key);
-      blob.style.opacity = valueToOpacity(key, value);
-      blob.style.width = `${blobSize}px`;
-      blob.style.height = `${blobSize}px`;
-      blob.style.filter = `blur(${valueToBlur(key, value, blobSize)}px)`;
-    });
+  blobs.forEach(blob => {
+    const key = blob.dataset.sensor;
+    const value = dataItem[key] ?? 0;
+    blob.style.background = valueToColor(key);
+    blob.style.opacity = valueToOpacity(key, value);
+    blob.style.width = `${cellSize}px`;
+    blob.style.height = `${cellSize}px`;
+    blob.style.filter = `blur(${valueToBlur(key, value, cellSize)}px)`;
   });
 }
 
@@ -96,19 +81,18 @@ async function fetchLatestData() {
     const response = await fetch('https://server-online-1.onrender.com/sensor');
     const data = await response.json();
 
-    // On prend les 144 dernières lignes pour 12x12 cellules
-    latestData = data.slice(-144);
-    updateGridWithJSON(latestData);
+    // prendre le prochain lot (6 valeurs) pour la cellule courante
+    const nextData = data[currentCellIndex % data.length]; 
+    const cell = lavaGrid.children[currentCellIndex % (rows*cols)];
 
-    console.log("✅ Données mises à jour :", latestData[latestData.length - 1]);
+    updateCell(cell, nextData);
 
+    currentCellIndex++;
   } catch (err) {
-    console.error('❌ Erreur fetch JSON:', err);
+    console.error('Erreur fetch JSON:', err);
   }
 }
 
 // --- Initialisation ---
 setupGrid();
-fetchLatestData();
 setInterval(fetchLatestData, 5000);
-window.addEventListener('resize', () => updateGridWithJSON(latestData));
