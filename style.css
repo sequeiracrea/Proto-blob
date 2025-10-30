@@ -1,3 +1,4 @@
+/* ----- Reset et structure de base ----- */
 html, body {
   height: 100%;
   margin: 0;
@@ -9,11 +10,13 @@ html, body {
 }
 
 .lava-grid {
-  display: grid; /* défini aussi par JS, mais utile pour fallback */
-  width: 90vw;   /* prend 90% de la largeur de l’écran */
-  max-width: 1000px; /* limite la taille pour grands écrans */
-  aspect-ratio: 1 / 1; /* carré */
-  gap: 0.5vmin;  /* petit espace entre les cellules */
+  display: grid;
+  width: 90vw;          /* largeur adaptable à l'écran */
+  max-width: 1000px;    /* limite largeur pour grands écrans */
+  aspect-ratio: 1 / 1;  /* carré */
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
+  gap: 0.5vmin;
 }
 
 .cell {
