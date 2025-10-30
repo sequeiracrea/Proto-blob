@@ -1,111 +1,36 @@
 const lavaGrid = document.querySelector('.lava-grid');
 const rows = 12;
 const cols = 12;
-const sensorKeys = ['co', 'co2', 'nh3', 'no2', 'humidity', 'bmp_temp'];
 
-// --- Création de la grille 12x12 avec superposition de blobs ---
-lavaGrid.style.display = 'grid';
-lavaGrid.style.gridTemplateColumns = `repeat(${cols}, 12vmin)`;
-lavaGrid.style.gridTemplateRows = `repeat(${rows}, 12vmin)`;
-lavaGrid.style.gap = '2vmin';
-lavaGrid.style.justifyItems = 'center';
-lavaGrid.style.alignItems = 'center';
+// Met à jour la grille avec taille adaptative
+function setupGrid() {
+  lavaGrid.style.display = 'grid';
+  lavaGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  lavaGrid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+  lavaGrid.style.gap = '1%';
 
-for (let r = 0; r < rows; r++) {
-  for (let c = 0; c < cols; c++) {
-    const cell = document.createElement('div');
-    cell.classList.add('cell');
-    cell.style.position = 'relative';
-    cell.style.width = '12vmin';
-    cell.style.height = '12vmin';
+  // supprime anciennes cellules si nécessaire
+  lavaGrid.innerHTML = '';
 
-    sensorKeys.forEach(key => {
-      const blob = document.createElement('div');
-      blob.classList.add('blob');
-      blob.dataset.sensor = key;
-      blob.style.position = 'absolute';
-      blob.style.top = '50%';
-      blob.style.left = '50%';
-      blob.style.transform = 'translate(-50%, -50%)';
-      blob.style.width = '12vmin';
-      blob.style.height = '12vmin';
-      blob.style.borderRadius = '50%';
-      blob.style.opacity = '0.7';
-      blob.style.mixBlendMode = 'screen';
-      cell.appendChild(blob);
-    });
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const cell = document.createElement('div');
+      cell.classList.add('cell');
 
-    lavaGrid.appendChild(cell);
-  }
-}
+      sensorKeys.forEach(key => {
+        const blob = document.createElement('div');
+        blob.classList.add('blob');
+        blob.dataset.sensor = key;
+        cell.appendChild(blob);
+      });
 
-// --- Fonctions utilitaires ---
-function normalize(value, min, max) {
-  return Math.max(0, Math.min(1, (value - min) / (max - min)));
-}
-
-function valueToColor(sensor, value) {
-  const norm = normalize(value, sensorMin[sensor], sensorMax[sensor]);
-  if (norm < 0.25) return '#00ff00';
-  if (norm < 0.5) return '#ffff00';
-  if (norm < 0.75) return '#ff8000';
-  return '#ff0040';
-}
-
-function valueToBlur(sensor, value) {
-  const norm = normalize(value, sensorMin[sensor], sensorMax[sensor]);
-  return 5 + norm * 20; // 5px → 25px
-}
-
-// --- Définir min/max par capteur ---
-const sensorMin = { co: 0, co2: 350, nh3: 0, no2: 0, humidity: 0, bmp_temp: 15 };
-const sensorMax = { co: 1, co2: 500, nh3: 1.5, no2: 1, humidity: 100, bmp_temp: 30 };
-
-// --- Index global pour cellule ---
-let currentCellIndex = 0;
-
-// --- Mise à jour d’une seule cellule ---
-function updateCellWithData(cell, dataItem) {
-  const blobs = cell.querySelectorAll('.blob');
-  blobs.forEach(blob => {
-    const key = blob.dataset.sensor;
-    const value = dataItem[key] ?? 0;
-    blob.style.background = valueToColor(key, value);
-    blob.style.filter = `blur(${valueToBlur(key, value)}px)`;
-    blob.style.transition = 'background 0.5s, filter 0.5s';
-  });
-}
-
-// --- Récupération du flux JSON ---
-async function fetchLatestData() {
-  try {
-    const response = await fetch('https://server-online-1.onrender.com/sensor');
-    const contentType = response.headers.get("content-type");
-    if (!contentType || !contentType.includes("application/json")) {
-      const text = await response.text();
-      console.warn("⚠️ Réponse non JSON, reçu :", text.slice(0, 200));
-      throw new Error("La réponse n'est pas du JSON");
+      lavaGrid.appendChild(cell);
     }
-
-    const data = await response.json();
-    const latest = data[data.length - 1];
-    if (!latest) return;
-
-    const cells = document.querySelectorAll('.cell');
-    const cell = cells[currentCellIndex];
-    updateCellWithData(cell, latest);
-
-    currentCellIndex++;
-    if (currentCellIndex >= cells.length) currentCellIndex = 0; // boucle la grille si plein
-
-    console.log(`✅ Mise à jour cellule ${currentCellIndex}`, latest);
-
-  } catch (err) {
-    console.error('❌ Erreur fetch JSON:', err);
   }
 }
 
-// --- Rafraîchir toutes les 5 secondes ---
-setInterval(fetchLatestData, 5000);
-fetchLatestData(); // initial
+// Appelle cette fonction au départ
+setupGrid();
 
+// Optionnel : recalculer si l’écran change de taille
+window.addEventListener('resize', setupGrid);
