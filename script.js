@@ -1,13 +1,13 @@
 const lavaGrid = document.querySelector('.lava-grid');
 const modeSelector = document.getElementById('modeSelector');
 const legend = document.getElementById('legend');
+const tooltip = document.getElementById('tooltip');
 
 const rows = 12;
 const cols = 12;
 let currentCellIndex = 0;
 
 const sensorKeys = ['co', 'co2', 'nh3', 'no2', 'humidity', 'bmp_temp'];
-
 const sensorMin = { co: 0, co2: 350, nh3: 0, no2: 0, humidity: 0, bmp_temp: 15 };
 const sensorMax = { co: 1, co2: 500, nh3: 1.5, no2: 1, humidity: 100, bmp_temp: 30 };
 
@@ -37,6 +37,21 @@ function valueToBlur(sensor, value, blobSize) {
   return blobSize * 0.05 + norm * blobSize * 0.15;
 }
 
+/* ----- Tooltip ----- */
+function showTooltip(event, content) {
+  tooltip.innerHTML = content;
+  tooltip.style.left = event.pageX + 12 + 'px';
+  tooltip.style.top = event.pageY + 12 + 'px';
+  tooltip.style.opacity = 1;
+}
+function moveTooltip(event) {
+  tooltip.style.left = event.pageX + 12 + 'px';
+  tooltip.style.top = event.pageY + 12 + 'px';
+}
+function hideTooltip() {
+  tooltip.style.opacity = 0;
+}
+
 /* ----- Légendes dynamiques ----- */
 const legends = {
   A: `
@@ -49,23 +64,21 @@ const legends = {
   `,
   B: `
     <strong>Mode B — Capteurs</strong><br>
-    <div class="legend-item"><div class="legend-color" style="background:#FF4400"></div>CO (monoxyde de carbone)</div>
-    <div class="legend-item"><div class="legend-color" style="background:#23E6F7"></div>CO₂ (dioxyde de carbone)</div>
-    <div class="legend-item"><div class="legend-color" style="background:#FFDD00"></div>NH₃ (ammoniac)</div>
-    <div class="legend-item"><div class="legend-color" style="background:#00FF80"></div>NO₂ (dioxyde d’azote)</div>
+    <div class="legend-item"><div class="legend-color" style="background:#FF4400"></div>CO</div>
+    <div class="legend-item"><div class="legend-color" style="background:#23E6F7"></div>CO₂</div>
+    <div class="legend-item"><div class="legend-color" style="background:#FFDD00"></div>NH₃</div>
+    <div class="legend-item"><div class="legend-color" style="background:#00FF80"></div>NO₂</div>
     <div class="legend-item"><div class="legend-color" style="background:#FF00FF"></div>Humidité</div>
     <div class="legend-item"><div class="legend-color" style="background:#0080FF"></div>Température</div>
   `,
   C: `
     <strong>Mode C — Fusion pondérée</strong><br>
-    Couleur = mélange dynamique pondéré des 6 capteurs (CO, CO₂, NH₃, NO₂, humidité, température).<br>
+    Couleur = mélange dynamique pondéré des 6 capteurs.<br>
     Intensité ↗️ = concentration moyenne ↗️
   `
 };
-
 function updateLegend() {
-  const mode = modeSelector.value;
-  legend.innerHTML = legends[mode];
+  legend.innerHTML = legends[modeSelector.value];
 }
 
 /* ----- Création de la grille ----- */
@@ -78,7 +91,7 @@ function setupGrid() {
   }
 }
 
-/* ----- Mode A : AQI global ----- */
+/* ----- Mode A ----- */
 function getAQIColor(aqi) {
   if (aqi <= 50) return '#00E400';
   if (aqi <= 100) return '#FFFF00';
@@ -87,86 +100,87 @@ function getAQIColor(aqi) {
   if (aqi <= 300) return '#8F3F97';
   return '#7E0023';
 }
-
 function computeAQIFromData(dataItem) {
   const values = sensorKeys.map(k => normalize(dataItem[k] ?? 0, sensorMin[k], sensorMax[k]));
-  return values.reduce((a, b) => a + b, 0) / values.length * 300;
+  return values.reduce((a,b)=>a+b,0)/values.length*300;
 }
 
-/* ----- Mode C : Fusion pondérée ----- */
+/* ----- Mode C ----- */
 function computeMixedColor(dataItem) {
-  let r = 0, g = 0, b = 0;
-  sensorKeys.forEach(k => {
+  let r=0,g=0,b=0;
+  sensorKeys.forEach(k=>{
     const norm = normalize(dataItem[k] ?? 0, sensorMin[k], sensorMax[k]);
-    const hex = valueToColor(k);
-    const [cr, cg, cb] = [parseInt(hex.substr(1, 2), 16), parseInt(hex.substr(3, 2), 16), parseInt(hex.substr(5, 2), 16)];
-    r += cr * norm;
-    g += cg * norm;
-    b += cb * norm;
+    const hex=valueToColor(k);
+    const [cr,cg,cb] = [parseInt(hex.substr(1,2),16),parseInt(hex.substr(3,2),16),parseInt(hex.substr(5,2),16)];
+    r+=cr*norm; g+=cg*norm; b+=cb*norm;
   });
-  const count = sensorKeys.length;
-  return `rgb(${Math.min(255, r / count)}, ${Math.min(255, g / count)}, ${Math.min(255, b / count)})`;
+  const count=sensorKeys.length;
+  return `rgb(${Math.min(255,r/count)},${Math.min(255,g/count)},${Math.min(255,b/count)})`;
 }
 
 /* ----- Mise à jour d'une cellule ----- */
-function updateCell(cell, dataItem) {
+function updateCell(cell, dataItem){
   const mode = modeSelector.value;
   const cellSize = cell.getBoundingClientRect().width;
-  cell.innerHTML = '';
+  cell.innerHTML='';
 
-  if (mode === 'A') {
-    const blob = document.createElement('div');
+  if(mode==='A'||mode==='C'){
+    const blob=document.createElement('div');
     blob.classList.add('blob');
-    const aqi = computeAQIFromData(dataItem);
-    blob.style.background = getAQIColor(aqi);
-    blob.style.width = `${cellSize}px`;
-    blob.style.height = `${cellSize}px`;
-    blob.style.opacity = 0.4 + 0.6 * (aqi / 300);
-    blob.style.filter = `blur(${cellSize * 0.1}px)`;
+    blob.style.width=`${cellSize}px`;
+    blob.style.height=`${cellSize}px`;
+    if(mode==='A'){
+      const aqi = computeAQIFromData(dataItem);
+      blob.style.background = getAQIColor(aqi);
+      blob.style.opacity = 0.4 + 0.6*(aqi/300);
+    } else {
+      blob.style.background = computeMixedColor(dataItem);
+      blob.style.opacity = 0.5;
+    }
+    blob.style.filter = `blur(${cellSize*0.1}px)`;
+    blob.addEventListener('mouseenter', e=>{
+      const content = sensorKeys.map(k=>`${k.toUpperCase()}: ${dataItem[k] ?? '–'}`).join('<br>');
+      showTooltip(e, content);
+    });
+    blob.addEventListener('mousemove', moveTooltip);
+    blob.addEventListener('mouseleave', hideTooltip);
     cell.appendChild(blob);
   }
 
-  if (mode === 'B') {
+  if(mode==='B'){
     const subGrid = document.createElement('div');
     subGrid.classList.add('sub-grid');
-    sensorKeys.forEach(key => {
-      const blob = document.createElement('div');
+    sensorKeys.forEach(k=>{
+      const blob=document.createElement('div');
       blob.classList.add('blob');
-      const value = dataItem[key] ?? 0;
-      blob.style.background = valueToColor(key);
-      blob.style.opacity = valueToOpacity(key, value);
-      blob.style.filter = `blur(${valueToBlur(key, value, cellSize)}px)`;
-      blob.style.width = '100%';
-      blob.style.height = '100%';
+      const value=dataItem[k] ?? 0;
+      blob.style.background = valueToColor(k);
+      blob.style.opacity = valueToOpacity(k,value);
+      blob.style.filter = `blur(${valueToBlur(k,value,cellSize)}px)`;
+      blob.style.width='100%';
+      blob.style.height='100%';
+      blob.addEventListener('mouseenter', e=>{
+        showTooltip(e, `${k.toUpperCase()}: ${value}`);
+      });
+      blob.addEventListener('mousemove', moveTooltip);
+      blob.addEventListener('mouseleave', hideTooltip);
       subGrid.appendChild(blob);
     });
     cell.appendChild(subGrid);
   }
-
-  if (mode === 'C') {
-    const blob = document.createElement('div');
-    blob.classList.add('blob');
-    const color = computeMixedColor(dataItem);
-    blob.style.background = color;
-    blob.style.width = `${cellSize}px`;
-    blob.style.height = `${cellSize}px`;
-    blob.style.opacity = 0.5;
-    blob.style.filter = `blur(${cellSize * 0.1}px)`;
-    cell.appendChild(blob);
-  }
 }
 
 /* ----- Données réelles ----- */
-async function fetchLatestData() {
-  try {
+async function fetchLatestData(){
+  try{
     const response = await fetch('https://server-online-1.onrender.com/sensor');
     const data = await response.json();
     const nextData = data[currentCellIndex % data.length];
-    const cell = lavaGrid.children[currentCellIndex % (rows * cols)];
-    updateCell(cell, nextData);
+    const cell = lavaGrid.children[currentCellIndex % (rows*cols)];
+    updateCell(cell,nextData);
     currentCellIndex++;
-  } catch (err) {
-    console.error('Erreur fetch JSON:', err);
+  }catch(err){
+    console.error('Erreur fetch JSON:',err);
   }
 }
 
@@ -174,11 +188,11 @@ async function fetchLatestData() {
 setupGrid();
 updateLegend();
 fetchLatestData();
-setInterval(fetchLatestData, 5000);
+setInterval(fetchLatestData,5000);
 
 /* ----- Réactivité ----- */
-modeSelector.addEventListener('change', () => {
+modeSelector.addEventListener('change',()=>{
   setupGrid();
   updateLegend();
-  currentCellIndex = 0;
+  currentCellIndex=0;
 });
