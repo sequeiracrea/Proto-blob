@@ -42,7 +42,7 @@ select {
   transition: background 0.5s, filter 0.5s, opacity 0.5s;
 }
 
-/* ----- Sous-grille mode B (avant calques, si jamais) ----- */
+/* ----- Sous-grille mode B ----- */
 .sub-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
