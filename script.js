@@ -85,67 +85,87 @@ function renderTimeline(){
   dataSession.forEach(d=>addClusterToTimeline(d));
 }
 
-function scrollToLastCluster(){ timeline.parentElement.scrollLeft=timeline.scrollWidth; }
-
-// ------------------ Fetch unique session ------------------
-async function fetchLatestDataSession(){
-  try{
-    const resp=await fetch("https://server-online-1.onrender.com/sensor");
-    const data=await resp.json();
-    if(Array.isArray(data)&&data.length>0){
-      dataSession=data; // <-- buffer global
-      renderTimeline(); // timeline toujours à jour
-      updateCharts(); // tous les charts
+function scrollToLastCluster(){ timeline.parentElement.scrollLeft=timeline.scrollWidth;
+// ------------------ Récupération des données ------------------
+async function fetchLatestData(){
+  try {
+    const resp = await fetch("https://server-online-1.onrender.com/sensor");
+    const data = await resp.json();
+    if(Array.isArray(data) && data.length > 0){
+      const lastItem = data[data.length-1];
+      dataSession.push(lastItem);            // <-- stocker globalement
+      addClusterToTimeline(lastItem);        // <-- timeline
+      updateCharts(lastItem);                // <-- charts
     }
-  }catch(err){ console.error("Erreur fetch JSON:",err); }
-}
-
-// Démarrer la session unique
-function startSession(){
-  fetchLatestDataSession(); // fetch initial
-  if(fetchInterval) clearInterval(fetchInterval);
-  fetchInterval=setInterval(fetchLatestDataSession,5000); // mettre à jour toutes pages
+  } catch(err){
+    console.error("Erreur fetch JSON:", err);
+  }
 }
 
 // ------------------ Charts ------------------
-function updateCharts(){
-  if(aqiChart) fetchChartData(aqiChart,['pm2_5','pm10','co2','no2']);
-  if(pressureChart) fetchChartData(pressureChart,['pressure']);
-  if(humidityChart) fetchChartData(humidityChart,['humidity','bmp_temp']);
+function updateCharts(newData){
+  if(aqiChart) updateChartData(aqiChart, ['pm2_5','pm10','co2','no2'], newData);
+  if(pressureChart) updateChartData(pressureChart, ['pressure'], newData);
+  if(humidityChart) updateChartData(humidityChart, ['humidity','bmp_temp'], newData);
 }
 
-function startAirQualityChart(){ 
-  if(aqiChart) return; 
-  const ctx=document.getElementById("aqiChart").getContext("2d"); 
-  aqiChart=new Chart(ctx,{ type:'line', data:{ labels:[], datasets:[
-    {label:'PM2.5',data:[],borderColor:'#FF4400',fill:false},{label:'PM10',data:[],borderColor:'#FF8800',fill:false},
-    {label:'CO2',data:[],borderColor:'#00FFAA',fill:false},{label:'NO2',data:[],borderColor:'#00FF80',fill:false} ] },
-    options:{responsive:true, plugins:{legend:{position:'top'}}} 
-  }); 
-  updateCharts();
-}
-
-function startPressureChart(){ 
-  if(pressureChart) return; 
-  const ctx=document.getElementById("pressureChart").getContext("2d"); 
-  pressureChart=new Chart(ctx,{type:'line', data:{labels:[],datasets:[{label:'Pression hPa',data:[],borderColor:'#00AAFF',fill:false}]}, options:{responsive:true,plugins:{legend:{position:'top'}}}}); 
-  updateCharts();
-}
-
-function startHumidityChart(){ 
-  if(humidityChart) return; 
-  const ctx=document.getElementById("humidityChart").getContext("2d"); 
-  humidityChart=new Chart(ctx,{type:'line', data:{labels:[],datasets:[{label:'Humidité %',data:[],borderColor:'#FF00FF',fill:false},{label:'Temp. °C',data:[],borderColor:'#0080FF',fill:false}]}, options:{responsive:true,plugins:{legend:{position:'top'}}}}); 
-  updateCharts();
-}
-
-async function fetchChartData(chart,keys){
-  if(!dataSession || dataSession.length===0) return;
-  chart.data.labels=dataSession.map((d,i)=>i+1);
-  keys.forEach((k,idx)=>{ chart.data.datasets[idx].data=dataSession.map(d=>d[k]??0); });
+function updateChartData(chart, keys, dataItem){
+  chart.data.labels.push(chart.data.labels.length + 1);
+  keys.forEach((k, idx) => {
+    chart.data.datasets[idx].data.push(dataItem[k] ?? 0);
+  });
   chart.update();
 }
 
-// ------------------ Initialisation ------------------
-startSession();
+// ------------------ Démarrage Charts ------------------
+function startAirQualityChart(){
+  if(aqiChart) return;
+  const ctx=document.getElementById("aqiChart").getContext("2d");
+  aqiChart = new Chart(ctx, {
+    type:'line',
+    data:{ labels:[], datasets:[
+      {label:'PM2.5', data:[], borderColor:'#FF4400', fill:false},
+      {label:'PM10', data:[], borderColor:'#FF8800', fill:false},
+      {label:'CO2', data:[], borderColor:'#00FFAA', fill:false},
+      {label:'NO2', data:[], borderColor:'#00FF80', fill:false}
+    ]},
+    options:{responsive:true, plugins:{legend:{position:'top'}}}
+  });
+  dataSession.forEach(d => updateCharts(d)); // afficher tout le buffer
+}
+
+function startPressureChart(){
+  if(pressureChart) return;
+  const ctx=document.getElementById("pressureChart").getContext("2d");
+  pressureChart = new Chart(ctx, {
+    type:'line',
+    data:{ labels:[], datasets:[
+      {label:'Pression hPa', data:[], borderColor:'#00AAFF', fill:false}
+    ]},
+    options:{responsive:true, plugins:{legend:{position:'top'}}}
+  });
+  dataSession.forEach(d => updateCharts(d));
+}
+
+function startHumidityChart(){
+  if(humidityChart) return;
+  const ctx=document.getElementById("humidityChart").getContext("2d");
+  humidityChart = new Chart(ctx, {
+    type:'line',
+    data:{ labels:[], datasets:[
+      {label:'Humidité %', data:[], borderColor:'#FF00FF', fill:false},
+      {label:'Temp. °C', data:[], borderColor:'#0080FF', fill:false}
+    ]},
+    options:{responsive:true, plugins:{legend:{position:'top'}}}
+  });
+  dataSession.forEach(d => updateCharts(d));
+}
+
+// ------------------ Lancement récupération périodique ------------------
+if(!fetchInterval){
+  fetchLatestData(); // fetch initial
+  fetchInterval = setInterval(fetchLatestData, 5000); // rafraîchissement toutes les 5s
+}
+
+// ------------------ Initial page ------------------
 showPage(pageSelector.value);
