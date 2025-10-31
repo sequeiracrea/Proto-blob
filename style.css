@@ -72,31 +72,6 @@ html, body {
   padding: 0;
 }
 
-/* Légende flottante (toujours au-dessus) */
-.legends {
-  position: sticky;
-  left: 0;
-  display: grid;
-  grid-template-rows: repeat(6, 8vmin);
-  width: 8vmin;
-  margin-right: 3vmin;
-  background: none;
-  pointer-events: none;
-  z-index: 10; /* au-dessus des blobs et calques */
-}
-
-.legends span {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  font-size: 0.8rem;
-  color: #fff; /* texte blanc pur */
-  text-transform: uppercase;
-  user-select: none;
-  pointer-events: auto;
-  position: relative;
-}
-
 /* Timeline grid pour alignement des blobs */
 .timeline {
   display: grid;
@@ -143,6 +118,27 @@ html, body {
 
 .blob:hover .tooltip { opacity: 1; }
 
+/* Légende fixe indépendante, blanche pure */
+.legend-fixed {
+  position: fixed;
+  top: 50%;
+  left: 1vmin;
+  transform: translateY(-50%);
+  display: grid;
+  grid-template-rows: repeat(6, 8vmin);
+  z-index: 50;
+}
+
+.legend-fixed span {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  user-select: none;
+}
+
 /* Page multi-page */
 .page {
   position: absolute;
@@ -151,13 +147,13 @@ html, body {
   overflow: auto;
 }
 
-/* Media queries pour tablette et smartphone */
+/* Media queries */
 @media (max-width: 1024px) {
-  .timeline, .legends { grid-template-rows: repeat(6, 7vmin); }
-  .legends { width: 10vmin; margin-right: 2vmin; }
+  .timeline { grid-template-rows: repeat(6, 7vmin); }
+  .legend-fixed { grid-template-rows: repeat(6, 7vmin); }
 }
 
 @media (max-width: 600px) {
-  .timeline, .legends { grid-template-rows: repeat(6, 6vmin); }
-  .legends { width: 12vw; margin-right: 2vw; }
+  .timeline { grid-template-rows: repeat(6, 6vmin); }
+  .legend-fixed { grid-template-rows: repeat(6, 6vmin); }
 }
