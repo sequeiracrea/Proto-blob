@@ -65,14 +65,14 @@ html, body {
   overflow-y: hidden;
   display: flex;
   flex-direction: row;
-  align-items: center; /* centre verticalement */
+  align-items: center;
   justify-content: flex-start;
   scroll-behavior: smooth;
   z-index: 2;
   padding: 0;
 }
 
-/* Légende flottante */
+/* Légende flottante (toujours au-dessus) */
 .legends {
   position: sticky;
   left: 0;
@@ -82,7 +82,7 @@ html, body {
   margin-right: 3vmin;
   background: none;
   pointer-events: none;
-  z-index: 10; /* toujours au-dessus */
+  z-index: 10; /* au-dessus des blobs et calques */
 }
 
 .legends span {
@@ -141,29 +141,23 @@ html, body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.5);
 }
 
-.blob:hover .tooltip {
-  opacity: 1;
-}
+.blob:hover .tooltip { opacity: 1; }
 
-/* Media queries pour tablette et smartphone */
-@media (max-width: 1024px) {
-  .timeline, .legends {
-    grid-template-rows: repeat(6, 7vmin);
-  }
-  .legends { width: 10vmin; margin-right: 2vmin; }
-}
-
-@media (max-width: 600px) {
-  .timeline, .legends {
-    grid-template-rows: repeat(6, 6vmin);
-  }
-  .legends { width: 12vw; margin-right: 2vw; }
-}
-
-/* Page placeholder */
+/* Page multi-page */
 .page {
   position: absolute;
   inset: 0;
   padding: 1rem;
   overflow: auto;
+}
+
+/* Media queries pour tablette et smartphone */
+@media (max-width: 1024px) {
+  .timeline, .legends { grid-template-rows: repeat(6, 7vmin); }
+  .legends { width: 10vmin; margin-right: 2vmin; }
+}
+
+@media (max-width: 600px) {
+  .timeline, .legends { grid-template-rows: repeat(6, 6vmin); }
+  .legends { width: 12vw; margin-right: 2vw; }
 }
