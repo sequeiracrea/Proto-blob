@@ -30,6 +30,7 @@ let realtime = true;
 realtimeBtn.addEventListener("click", () => {
   realtime = !realtime;
   realtimeBtn.textContent = `Lecture automatique : ${realtime ? "ON" : "OFF"}`;
+  if (realtime) scrollToLastCluster();
 });
 
 modeSelector.addEventListener("change", () => {
@@ -88,9 +89,13 @@ function addCluster(dataItem) {
   });
 
   timeline.appendChild(cluster);
-  if (realtime) {
-    timeline.parentElement.scrollLeft = timeline.scrollWidth; 
-  }
+
+  if (realtime) scrollToLastCluster();
+}
+
+function scrollToLastCluster() {
+  const container = timeline.parentElement;
+  container.scrollLeft = timeline.scrollWidth;
 }
 
 async function fetchLatestData() {
