@@ -2,10 +2,12 @@ const lavaGrid = document.querySelector('.lava-grid');
 const rows = 12;
 const cols = 12;
 const sensorKeys = ['co', 'co2', 'nh3', 'no2', 'humidity', 'bmp_temp'];
-let currentCellIndex = 0; // cellule suivante à mettre à jour
-let latestFlattenedData = [];
+let currentCellIndex = 0;
 
-// --- Création de la grille 12x12 ---
+const sensorMin = { co: 0, co2: 350, nh3: 0, no2: 0, humidity: 0, bmp_temp: 15 };
+const sensorMax = { co: 1, co2: 500, nh3: 1.5, no2: 1, humidity: 100, bmp_temp: 30 };
+
+/* ---- Création de la grille ---- */
 function setupGrid() {
   lavaGrid.innerHTML = '';
   for (let r = 0; r < rows; r++) {
@@ -25,24 +27,14 @@ function setupGrid() {
   }
 }
 
-// --- Utilitaires ---
+/* ---- Normalisation ---- */
 function normalize(value, min, max) {
   return Math.max(0, Math.min(1, (value - min) / (max - min)));
 }
 
-const sensorMin = { co: 0, co2: 350, nh3: 0, no2: 0, humidity: 0, bmp_temp: 15 };
-const sensorMax = { co: 1, co2: 500, nh3: 1.5, no2: 1, humidity: 100, bmp_temp: 30 };
-
+/* ---- Couleurs depuis variables CSS ---- */
 function valueToColor(sensor) {
-  switch (sensor) {
-    case 'co': return '#FF4400';
-    case 'co2': return '#23E6F7';
-    case 'nh3': return '#FFDD00';
-    case 'no2': return '#00FF80';
-    case 'humidity': return '#FF00FF';
-    case 'bmp_temp': return '#0080FF';
-    default: return '#FFFFFF';
-  }
+  return getComputedStyle(document.documentElement).getPropertyValue(`--color-${sensor}`).trim() || '#FFFFFF';
 }
 
 function valueToOpacity(sensor, value) {
@@ -52,32 +44,42 @@ function valueToOpacity(sensor, value) {
 
 function valueToBlur(sensor, value, blobSize) {
   const norm = normalize(value, sensorMin[sensor], sensorMax[sensor]);
-  return blobSize * 0.05 + norm * blobSize * 0.15;
+  return blobSize * (0.05 + norm * 0.15);
 }
 
-// --- Mettre à jour une cellule avec un lot de 6 données ---
+/* ---- Mise à jour d’une cellule ---- */
 function updateCell(cell, dataItem) {
   const blobs = cell.querySelectorAll('.blob');
   const cellSize = cell.getBoundingClientRect().width;
+  let globalBrightness = 0;
 
   blobs.forEach(blob => {
     const key = blob.dataset.sensor;
     const value = dataItem[key] ?? 0;
-    blob.style.background = valueToColor(key);
-    blob.style.opacity = valueToOpacity(key, value);
+    const color = valueToColor(key);
+    const opacity = valueToOpacity(key, value);
+    const blur = valueToBlur(key, value, cellSize);
+
+    blob.style.background = color;
+    blob.style.opacity = opacity;
     blob.style.width = `${cellSize}px`;
     blob.style.height = `${cellSize}px`;
-    blob.style.filter = `blur(${valueToBlur(key, value, cellSize)}px)`;
+    blob.style.filter = `blur(${blur}px)`;
+    globalBrightness += opacity;
   });
+
+  // 🌗 Équilibrage si trop lumineux
+  if (globalBrightness > 3.5) {
+    blobs.forEach(blob => blob.style.opacity *= 0.8);
+  }
 }
 
-// --- Récupération des données ---
+/* ---- Récupération des données ---- */
 async function fetchLatestData() {
   try {
     const response = await fetch('https://server-online-1.onrender.com/sensor');
     const data = await response.json();
 
-    // On ajoute un nouveau lot de données pour la cellule suivante
     const nextData = data[currentCellIndex % data.length];
     const cell = lavaGrid.children[currentCellIndex % (rows * cols)];
     updateCell(cell, nextData);
@@ -88,13 +90,7 @@ async function fetchLatestData() {
   }
 }
 
-// --- Initialisation ---
+/* ---- Initialisation ---- */
 setupGrid();
 fetchLatestData();
 setInterval(fetchLatestData, 5000);
-
-// --- Redimensionnement responsive ---
-window.addEventListener('resize', () => {
-  const cells = document.querySelectorAll('.cell');
-  cells.forEach(cell => updateCell(cell, {}));
-});
