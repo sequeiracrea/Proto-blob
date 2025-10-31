@@ -1,33 +1,25 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Proto-Blob Multi-Mode Cumulatif</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proto Blob – Mode B (Grille Horizontale)</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-  <!-- Calques globaux pour le mode B -->
-  <div id="fusion-screen" class="fusion-layer screen"></div>
-  <div id="fusion-color-dodge" class="fusion-layer color-dodge"></div>
-  <div id="fusion-color-burn" class="fusion-layer color-burn"></div>
-
   <!-- Sélecteur de mode -->
-  <select id="modeSelector">
-    <option value="A">Mode A — AQI global</option>
-    <option value="B">Mode B — 6 sous-blocs capteurs</option>
-    <option value="C" selected>Mode C — Fusion pondérée</option>
+  <select id="modeSelector" class="mode-selector">
+    <option value="A">Mode A – AQI global</option>
+    <option value="B" selected>Mode B – Grille horizontale</option>
+    <option value="C">Mode C – Fusion pondérée</option>
   </select>
 
-  <!-- Grille principale -->
-  <div class="lava-grid"></div>
+  <!-- Calques de fusion -->
+  <div class="color-burn-layer"></div>
+  <div class="color-dodge-layer"></div>
 
-  <!-- Légende dynamique -->
-  <div id="legend"></div>
-
-  <!-- Tooltip flottant -->
-  <div id="tooltip" class="tooltip"></div>
+  <!-- Grille horizontale -->
+  <div class="horizontal-grid"></div>
 
   <script src="script.js" defer></script>
 </body>
