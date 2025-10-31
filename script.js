@@ -1,5 +1,5 @@
 const modeSelector = document.getElementById("modeSelector");
-const grid = document.querySelector(".horizontal-grid");
+const timeline = document.querySelector(".timeline");
 
 const sensorKeys = ["pm2_5", "pm10", "nh3", "no2", "humidity", "bmp_temp"];
 const sensorColors = {
@@ -16,14 +16,10 @@ const sensorMin = { pm2_5: 0, pm10: 0, nh3: 0, no2: 0, humidity: 0, bmp_temp: 15
 const sensorMax = { pm2_5: 50, pm10: 80, nh3: 2, no2: 2, humidity: 100, bmp_temp: 35 };
 
 let currentMode = modeSelector.value;
-
 modeSelector.addEventListener("change", () => {
   currentMode = modeSelector.value;
-  if (currentMode === "B") {
-    startHorizontalMode();
-  } else {
-    grid.innerHTML = "";
-  }
+  if (currentMode === "B") startTimelineMode();
+  else timeline.innerHTML = "";
 });
 
 function normalize(v, min, max) {
@@ -45,29 +41,29 @@ function createBlob(sensor, value, dataItem) {
   blob.style.background = sensorColors[sensor];
 
   const norm = normalize(value, sensorMin[sensor], sensorMax[sensor]);
-  const size = 20 + norm * 60; // diamètre variable
+  const size = 20 + norm * 80; // diamètre variable selon intensité
   blob.style.width = `${size}px`;
   blob.style.height = `${size}px`;
   blob.style.opacity = 0.6 + norm * 0.4;
-  blob.style.filter = `blur(${4 + norm * 12}px)`;
+  blob.style.filter = `blur(${6 + norm * 14}px)`;
 
   const tooltip = createTooltip(dataItem);
   blob.appendChild(tooltip);
   return blob;
 }
 
-function addDataColumn(dataItem) {
-  const col = document.createElement("div");
-  col.classList.add("data-column");
+function addCluster(dataItem) {
+  const cluster = document.createElement("div");
+  cluster.classList.add("data-cluster");
 
   sensorKeys.forEach((key) => {
     const val = dataItem[key] ?? 0;
     const blob = createBlob(key, val, dataItem);
-    col.appendChild(blob);
+    cluster.appendChild(blob);
   });
 
-  grid.appendChild(col);
-  grid.scrollLeft = grid.scrollWidth; // scroll auto vers la droite
+  timeline.appendChild(cluster);
+  timeline.parentElement.scrollLeft = timeline.scrollWidth; // scroll automatique vers la droite
 }
 
 async function fetchLatestData() {
@@ -77,20 +73,19 @@ async function fetchLatestData() {
 
     if (Array.isArray(data) && data.length > 0) {
       const lastItem = data[data.length - 1];
-      addDataColumn(lastItem);
+      addCluster(lastItem);
     }
   } catch (err) {
     console.error("Erreur fetch JSON:", err);
   }
 }
 
-function startHorizontalMode() {
-  grid.innerHTML = "";
+function startTimelineMode() {
+  timeline.innerHTML = "";
   fetchLatestData();
   setInterval(() => {
     if (currentMode === "B") fetchLatestData();
   }, 5000);
 }
 
-// Démarrage initial
-if (currentMode === "B") startHorizontalMode();
+if (currentMode === "B") startTimelineMode();
