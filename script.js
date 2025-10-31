@@ -12,7 +12,7 @@ const sensorMax = { pm2_5:50, pm10:80, nh3:2, no2:2, humidity:100, bmp_temp:35 }
 let realtime = true;
 
 // Chart.js variables
-let aqiChart;
+let aqiChart, pressureChart, humidityChart;
 
 realtimeBtn.addEventListener("click", () => {
   realtime = !realtime;
@@ -31,6 +31,7 @@ pageSelector.addEventListener("change", () => {
   else if (pageSelector.value === "airQuality") startAirQualityChart();
 });
 
+// ---------- Timeline Functions (inchangées) ----------
 function normalize(v,min,max){return Math.max(0,Math.min(1,(v-min)/(max-min)));}
 
 function generateLegends(){
@@ -105,8 +106,9 @@ function startTimelineMode(){
   setInterval(()=>{ if(pageSelector.value==="timeline") fetchLatestData(); },5000);
 }
 
+// ---------- Air Quality Chart ----------
 function startAirQualityChart(){
-  if(aqiChart) return; // déjà initialisé
+  if(aqiChart) return;
   const ctx = document.getElementById('aqiChart').getContext('2d');
   aqiChart = new Chart(ctx, {
       type: 'line',
@@ -117,7 +119,6 @@ function startAirQualityChart(){
       options: { responsive:true, scales:{ x:{display:true}, y:{beginAtZero:true} } }
   });
 
-  // Update chart en temps réel
   setInterval(async () => {
     try{
       const resp=await fetch("https://server-online-1.onrender.com/sensor");
@@ -139,5 +140,27 @@ function startAirQualityChart(){
   },5000);
 }
 
-// Démarrage
-if(pageSelector.value==="timeline") startTimelineMode();
+// ---------- Pression Chart ----------
+function startPressureChart(){
+  if(pressureChart) return;
+  const ctx = document.getElementById('pressureChart').getContext('2d');
+  pressureChart = new Chart(ctx, {
+      type:'line',
+      data:{ labels:[], datasets:[ {label:'Pression hPa', data:[], borderColor:'#00FFFF', fill:false} ] },
+      options:{ responsive:true, scales:{ y:{ beginAtZero:false } } }
+  });
+}
+
+// ---------- Humidity Chart ----------
+function startHumidityChart(){
+  if(humidityChart) return;
+  const ctx = document.getElementById('humidityChart').getContext('2d');
+  humidityChart = new Chart(ctx, {
+      type:'line',
+      data:{ labels:[], datasets:[ {label:'Humidité %', data:[], borderColor:'#FF00FF', fill:false} ] },
+      options:{ responsive:true, scales:{ y:{ beginAtZero:true } } }
+  });
+}
+
+// Démarrage initial
+startTimelineMode();
