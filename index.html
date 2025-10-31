@@ -3,58 +3,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Proto Blob – App Qualité de l'air</title>
+  <title>Prototype Air Quality App</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <!-- Sélecteur de page -->
+
+  <!-- Menu de navigation -->
   <select id="pageSelector" class="mode-selector">
-    <option value="home">Home</option>
-    <option value="timeline" selected>Timeline</option>
-    <option value="airquality">Qualité de l'air</option>
+    <option value="home" selected>Home</option>
+    <option value="timeline">Timeline</option>
+    <option value="airQuality">Qualité de l’air</option>
     <option value="pressure">Pression atmosphérique</option>
     <option value="humidity">Hygrométrie</option>
   </select>
 
-  <!-- Bouton lecture automatique -->
+  <!-- Bouton lecture temps réel pour timeline -->
   <button id="realtimeBtn" class="realtime-btn">Lecture automatique : ON</button>
 
-  <!-- Calques de fusion -->
-  <div class="color-burn-layer"></div>
-  <div class="color-dodge-layer"></div>
+  <!-- Timeline page -->
+  <div id="timelinePage" class="page">
+    <!-- Calques de fusion -->
+    <div class="color-burn-layer"></div>
+    <div class="color-dodge-layer"></div>
 
-  <!-- Légende flottante (Timeline seulement) -->
-  <div class="legends"></div>
-
-  <!-- Pages -->
-  <section id="home" class="page">
-    <h1>Bienvenue sur l'application Qualité de l'air</h1>
-    <p>Navigation vers timeline et autres indicateurs via le menu déroulant.</p>
-  </section>
-
-  <section id="timeline" class="page">
     <div class="timeline-container">
+      <div class="legends"></div>
       <div class="timeline"></div>
     </div>
-  </section>
+  </div>
 
-  <section id="airquality" class="page">
-    <h2>Qualité de l'air</h2>
-    <p>Graphiques synthétiques PM, CO₂, NO₂, indicateur AQI, etc.</p>
-    <div class="placeholder-graph">[Graphiques AQI ici]</div>
-  </section>
+  <!-- Qualité de l’air page -->
+  <div id="airQualityPage" class="page" style="display:none;">
+    <h2>Qualité de l’air – PM2.5 / PM10</h2>
+    <canvas id="aqiChart" style="width:100%; max-width:800px; height:400px;"></canvas>
+  </div>
 
-  <section id="pressure" class="page">
-    <h2>Pression atmosphérique</h2>
-    <p>Indicateurs de pression actuelle et tendance.</p>
-    <div class="placeholder-graph">[Graphiques pression ici]</div>
-  </section>
+  <!-- Pression atmosphérique page -->
+  <div id="pressurePage" class="page" style="display:none;">
+    <h2>Pression Atmosphérique</h2>
+    <p>Graphiques et indicateurs à venir…</p>
+  </div>
 
-  <section id="humidity" class="page">
+  <!-- Hygrométrie page -->
+  <div id="humidityPage" class="page" style="display:none;">
     <h2>Hygrométrie</h2>
-    <p>Humidité, point de rosée et température.</p>
-    <div class="placeholder-graph">[Graphiques humidité/température ici]</div>
-  </section>
+    <p>Graphiques et indicateurs à venir…</p>
+  </div>
 
   <script src="script.js" defer></script>
 </body>
