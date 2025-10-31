@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blob Prototype</title>
+  <title>Proto-Blob amélioré</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,10 +12,22 @@
   <div class="color-burn-layer"></div>
   <div class="color-dodge-layer"></div>
 
-  <!-- Grille de blobs -->
+  <!-- Grille principale -->
   <div class="lava-grid"></div>
+
+  <!-- Légende -->
+  <div class="legend">
+    <h2>Légende capteurs</h2>
+    <ul>
+      <li><span class="color co"></span> CO</li>
+      <li><span class="color co2"></span> CO₂</li>
+      <li><span class="color nh3"></span> NH₃</li>
+      <li><span class="color no2"></span> NO₂</li>
+      <li><span class="color humidity"></span> Humidité</li>
+      <li><span class="color bmp_temp"></span> Température</li>
+    </ul>
+  </div>
 
   <script src="script.js" defer></script>
 </body>
 </html>
-
