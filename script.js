@@ -150,22 +150,29 @@ function updateCell(cell, dataItem){
   if(mode==='B'){
     const subGrid = document.createElement('div');
     subGrid.classList.add('sub-grid');
+
     sensorKeys.forEach(k=>{
       const blob=document.createElement('div');
       blob.classList.add('blob');
-      const value=dataItem[k] ?? 0;
+      const value = dataItem[k] ?? 0;
       blob.style.background = valueToColor(k);
       blob.style.opacity = valueToOpacity(k,value);
-      blob.style.filter = `blur(${valueToBlur(k,value,cellSize)}px)`;
-      blob.style.width='100%';
-      blob.style.height='100%';
+      // Flou proportionnel à la taille de la sous-cellule
+      blob.style.filter = `blur(${cellSize/3*0.15 + valueToBlur(k,value,0)}px)`;
+      // Retirer absolute pour mode B, laisse la grille gérer la taille
+      blob.style.position = 'relative';
+      blob.style.width = '100%';
+      blob.style.height = '100%';
+
       blob.addEventListener('mouseenter', e=>{
         showTooltip(e, `${k.toUpperCase()}: ${value}`);
       });
       blob.addEventListener('mousemove', moveTooltip);
       blob.addEventListener('mouseleave', hideTooltip);
+
       subGrid.appendChild(blob);
     });
+
     cell.appendChild(subGrid);
   }
 }
