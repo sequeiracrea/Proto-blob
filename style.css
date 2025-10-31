@@ -1,4 +1,5 @@
 /* Reset global */
+* { box-sizing: border-box; }
 html, body {
   height: 100%;
   margin: 0;
@@ -40,7 +41,7 @@ html, body {
   mix-blend-mode: color-dodge;
 }
 
-/* Timeline globale */
+/* Timeline globale container */
 .timeline-container {
   position: absolute;
   inset: 0;
@@ -54,23 +55,25 @@ html, body {
   z-index: 2;
 }
 
-/* Timeline elle-même : 6 lignes parallèles */
+/* Timeline elle-même : inline-flex pour flux horizontal naturel */
 .timeline {
-  display: grid;
-  grid-template-rows: repeat(6, 1fr);
-  grid-auto-flow: column;
-  gap: 2vmin;
+  display: inline-flex;            /* <-- changé : inline-flex */
+  flex-direction: row;             /* colonnes successives */
+  gap: 2px;                        /* <-- changé : gap 2px */
   padding-left: 10vmin;
   position: relative;
+  align-items: stretch;
 }
 
-/* Un lot de 6 blobs */
+/* Un lot de 6 blobs : colonne verticale (1x6) */
 .data-cluster {
-  display: grid;
-  grid-template-rows: repeat(6, 1fr);
+  display: flex;
+  flex-direction: column;          /* colonne : 6 blobs empilés */
   align-items: center;
-  justify-items: center;
-  margin-right: -20px; /* chevauchement léger entre clusters */
+  justify-content: space-between;
+  row-gap: 12px;
+  padding: 6px;
+  min-width: 64px;                 /* largeur minimale d'une colonne */
 }
 
 /* Blob */
@@ -80,6 +83,8 @@ html, body {
   transition: all 0.5s ease;
   pointer-events: auto;
   cursor: pointer;
+  display: grid;
+  place-items: center;
 }
 
 /* Tooltip */
