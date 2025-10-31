@@ -55,18 +55,37 @@ html, body {
   mix-blend-mode: color-dodge;
 }
 
-/* Timeline globale container */
+/* Timeline container */
 .timeline-container {
   position: absolute;
   inset: 0;
   overflow-x: auto;
   overflow-y: hidden;
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  align-items: stretch;
   scroll-behavior: smooth;
   padding: 10vmin 0;
   z-index: 2;
+}
+
+/* Légende verticale : à l’intérieur de timeline-container pour suivre hauteur */
+.legends {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 8vmin;
+  padding-right: 1vmin;
+  margin-right: 6px;
+  background: #0a0a0a;
+  z-index: 5;
+}
+
+.legends span {
+  font-size: 0.8rem;
+  color: #bbb;
+  text-transform: uppercase;
+  user-select: none;
 }
 
 /* Timeline : inline-flex pour flux horizontal naturel */
@@ -74,7 +93,6 @@ html, body {
   display: inline-flex;
   flex-direction: row;
   gap: 2px;
-  padding-left: 10vmin;
   position: relative;
   align-items: stretch;
 }
@@ -99,7 +117,7 @@ html, body {
   pointer-events: auto;
   cursor: pointer;
   position: relative;
-  z-index: 3; /* au-dessus du fond */
+  z-index: 3;
 }
 
 /* Tooltip */
@@ -117,33 +135,10 @@ html, body {
   transform: translate(-50%, -120%);
   opacity: 0;
   transition: opacity 0.2s ease;
-  z-index: 10; /* <-- surpasse le blur et le blend */
+  z-index: 10;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
 .blob:hover .tooltip {
   opacity: 1;
-}
-
-/* Légende verticale */
-.legends {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 8vmin;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* aligné sur timeline */
-  align-items: flex-end;
-  padding-right: 1vmin;
-  z-index: 5;
-  background: #0a0a0a; /* même couleur que fond */
-}
-
-.legends span {
-  font-size: 0.8rem;
-  color: #bbb;
-  text-transform: uppercase;
-  user-select: none;
 }
