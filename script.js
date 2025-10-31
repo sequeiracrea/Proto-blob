@@ -3,6 +3,10 @@ const modeSelector = document.getElementById('modeSelector');
 const legend = document.getElementById('legend');
 const tooltip = document.getElementById('tooltip');
 
+const fusionScreen = document.getElementById('fusion-screen');
+const fusionDodge = document.getElementById('fusion-color-dodge');
+const fusionBurn = document.getElementById('fusion-color-burn');
+
 const rows = 12;
 const cols = 12;
 let currentCellIndex = 0;
@@ -148,32 +152,37 @@ function updateCell(cell, dataItem){
   }
 
   if(mode==='B'){
-    const subGrid = document.createElement('div');
-    subGrid.classList.add('sub-grid');
+    // Efface anciens blobs des calques
+    [fusionScreen, fusionDodge, fusionBurn].forEach(layer => layer.innerHTML='');
 
-    sensorKeys.forEach(k=>{
-      const blob=document.createElement('div');
-      blob.classList.add('blob');
+    sensorKeys.forEach((k, idx)=>{
       const value = dataItem[k] ?? 0;
-      blob.style.background = valueToColor(k);
-      blob.style.opacity = valueToOpacity(k,value);
-      // Flou proportionnel à la taille de la sous-cellule
-      blob.style.filter = `blur(${cellSize/3*0.15 + valueToBlur(k,value,0)}px)`;
-      // Retirer absolute pour mode B, laisse la grille gérer la taille
-      blob.style.position = 'relative';
-      blob.style.width = '100%';
-      blob.style.height = '100%';
+      const blobSize = cellSize / 3; // taille relative mini-blob
 
-      blob.addEventListener('mouseenter', e=>{
-        showTooltip(e, `${k.toUpperCase()}: ${value}`);
+      [fusionScreen, fusionDodge, fusionBurn].forEach(layer => {
+        const blob = document.createElement('div');
+        blob.classList.add('blob');
+        blob.style.width = `${blobSize}px`;
+        blob.style.height = `${blobSize}px`;
+        blob.style.background = valueToColor(k);
+        blob.style.opacity = valueToOpacity(k,value);
+        blob.style.filter = `blur(${valueToBlur(k,value,blobSize)}px)`;
+
+        const row = Math.floor(idx/3);
+        const col = idx%3;
+        blob.style.position = 'absolute';
+        blob.style.left = `${cell.offsetLeft + col*blobSize}px`;
+        blob.style.top = `${cell.offsetTop + row*blobSize}px`;
+
+        blob.addEventListener('mouseenter', e=>{
+          showTooltip(e, `${k.toUpperCase()}: ${value}`);
+        });
+        blob.addEventListener('mousemove', moveTooltip);
+        blob.addEventListener('mouseleave', hideTooltip);
+
+        layer.appendChild(blob);
       });
-      blob.addEventListener('mousemove', moveTooltip);
-      blob.addEventListener('mouseleave', hideTooltip);
-
-      subGrid.appendChild(blob);
     });
-
-    cell.appendChild(subGrid);
   }
 }
 
