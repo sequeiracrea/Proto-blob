@@ -78,7 +78,7 @@ html, body {
   width: 8vmin;
   margin-right: 6px;
   background: #0a0a0a;
-  z-index: 50;
+  z-index: 0;
   pointer-events: none;
 }
 
@@ -140,4 +140,5 @@ html, body {
 .blob:hover .tooltip {
   opacity: 1;
 }
+
 
