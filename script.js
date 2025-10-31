@@ -1,7 +1,16 @@
 const modeSelector = document.getElementById("modeSelector");
 const timeline = document.querySelector(".timeline");
+const legendsContainer = document.querySelector(".legends");
 
 const sensorKeys = ["pm2_5", "pm10", "nh3", "no2", "humidity", "bmp_temp"];
+const sensorLabels = {
+  pm2_5: "PM2.5",
+  pm10: "PM10",
+  nh3: "NH3",
+  no2: "NO2",
+  humidity: "Humidité",
+  bmp_temp: "Temp.",
+};
 const sensorColors = {
   pm2_5: "#FF4400",
   pm10: "#FF8800",
@@ -14,6 +23,16 @@ const sensorColors = {
 // Échelles normalisées
 const sensorMin = { pm2_5: 0, pm10: 0, nh3: 0, no2: 0, humidity: 0, bmp_temp: 15 };
 const sensorMax = { pm2_5: 50, pm10: 80, nh3: 2, no2: 2, humidity: 100, bmp_temp: 35 };
+
+// Générer la légende verticale
+function generateLegends() {
+  legendsContainer.innerHTML = "";
+  sensorKeys.forEach((key) => {
+    const label = document.createElement("span");
+    label.textContent = sensorLabels[key];
+    legendsContainer.appendChild(label);
+  });
+}
 
 let currentMode = modeSelector.value;
 modeSelector.addEventListener("change", () => {
@@ -82,6 +101,7 @@ async function fetchLatestData() {
 
 function startTimelineMode() {
   timeline.innerHTML = "";
+  generateLegends();
   fetchLatestData();
   setInterval(() => {
     if (currentMode === "B") fetchLatestData();
