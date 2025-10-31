@@ -1,6 +1,7 @@
 const modeSelector = document.getElementById("modeSelector");
 const timeline = document.querySelector(".timeline");
 const legendsContainer = document.querySelector(".legends");
+const realtimeBtn = document.getElementById("realtimeBtn");
 
 const sensorKeys = ["pm2_5", "pm10", "nh3", "no2", "humidity", "bmp_temp"];
 const sensorLabels = {
@@ -20,21 +21,17 @@ const sensorColors = {
   bmp_temp: "#0080FF",
 };
 
-// Échelles normalisées
 const sensorMin = { pm2_5: 0, pm10: 0, nh3: 0, no2: 0, humidity: 0, bmp_temp: 15 };
 const sensorMax = { pm2_5: 50, pm10: 80, nh3: 2, no2: 2, humidity: 100, bmp_temp: 35 };
 
-// Générer la légende verticale
-function generateLegends() {
-  legendsContainer.innerHTML = "";
-  sensorKeys.forEach((key) => {
-    const label = document.createElement("span");
-    label.textContent = sensorLabels[key];
-    legendsContainer.appendChild(label);
-  });
-}
-
 let currentMode = modeSelector.value;
+let realtime = true;
+
+realtimeBtn.addEventListener("click", () => {
+  realtime = !realtime;
+  realtimeBtn.textContent = `Lecture automatique : ${realtime ? "ON" : "OFF"}`;
+});
+
 modeSelector.addEventListener("change", () => {
   currentMode = modeSelector.value;
   if (currentMode === "B") startTimelineMode();
@@ -43,6 +40,15 @@ modeSelector.addEventListener("change", () => {
 
 function normalize(v, min, max) {
   return Math.max(0, Math.min(1, (v - min) / (max - min)));
+}
+
+function generateLegends() {
+  legendsContainer.innerHTML = "";
+  sensorKeys.forEach((key) => {
+    const label = document.createElement("span");
+    label.textContent = sensorLabels[key];
+    legendsContainer.appendChild(label);
+  });
 }
 
 function createTooltip(dataItem) {
@@ -60,7 +66,7 @@ function createBlob(sensor, value, dataItem) {
   blob.style.background = sensorColors[sensor];
 
   const norm = normalize(value, sensorMin[sensor], sensorMax[sensor]);
-  const size = 20 + norm * 80; // diamètre variable selon intensité
+  const size = 20 + norm * 80;
   blob.style.width = `${size}px`;
   blob.style.height = `${size}px`;
   blob.style.opacity = 0.6 + norm * 0.4;
@@ -82,7 +88,9 @@ function addCluster(dataItem) {
   });
 
   timeline.appendChild(cluster);
-  timeline.parentElement.scrollLeft = timeline.scrollWidth; // scroll automatique vers la droite
+  if (realtime) {
+    timeline.parentElement.scrollLeft = timeline.scrollWidth; 
+  }
 }
 
 async function fetchLatestData() {
