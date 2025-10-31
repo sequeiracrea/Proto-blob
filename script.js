@@ -85,7 +85,9 @@ function renderTimeline(){
   dataSession.forEach(d=>addClusterToTimeline(d));
 }
 
-function scrollToLastCluster(){ timeline.parentElement.scrollLeft=timeline.scrollWidth;
+function scrollToLastCluster(){ 
+  timeline.parentElement.scrollLeft = timeline.scrollWidth; 
+}
 // ------------------ Récupération des données ------------------
 async function fetchLatestData(){
   try {
@@ -169,3 +171,4 @@ if(!fetchInterval){
 
 // ------------------ Initial page ------------------
 showPage(pageSelector.value);
+
