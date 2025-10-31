@@ -1,8 +1,5 @@
 const modeSelector = document.getElementById("modeSelector");
-const gridA = document.getElementById("modeA");
-const containerB = document.getElementById("modeB");
 const timeline = document.querySelector(".timeline");
-const layerC = document.getElementById("modeC");
 
 const sensorKeys = ["pm2_5", "pm10", "nh3", "no2", "humidity", "bmp_temp"];
 const sensorColors = {
@@ -13,38 +10,18 @@ const sensorColors = {
   humidity: "#FF00FF",
   bmp_temp: "#0080FF",
 };
+
+// Échelles normalisées
 const sensorMin = { pm2_5: 0, pm10: 0, nh3: 0, no2: 0, humidity: 0, bmp_temp: 15 };
 const sensorMax = { pm2_5: 50, pm10: 80, nh3: 2, no2: 2, humidity: 100, bmp_temp: 35 };
 
 let currentMode = modeSelector.value;
-let intervalId;
-
 modeSelector.addEventListener("change", () => {
-  clearInterval(intervalId);
   currentMode = modeSelector.value;
-  switchMode(currentMode);
+  if (currentMode === "B") startTimelineMode();
+  else timeline.innerHTML = "";
 });
 
-function switchMode(mode) {
-  gridA.style.display = "none";
-  containerB.style.display = "none";
-  layerC.style.display = "none";
-
-  if (mode === "A") {
-    gridA.style.display = "grid";
-    startModeA();
-  }
-  if (mode === "B") {
-    containerB.style.display = "flex";
-    startModeB();
-  }
-  if (mode === "C") {
-    layerC.style.display = "flex";
-    layerC.textContent = "Mode C – Fusion pondérée (à venir)";
-  }
-}
-
-// --- UTILITAIRES ---
 function normalize(v, min, max) {
   return Math.max(0, Math.min(1, (v - min) / (max - min)));
 }
@@ -58,78 +35,57 @@ function createTooltip(dataItem) {
   return tooltip;
 }
 
-function createBlob(sensor, value, dataItem, inline = false) {
+function createBlob(sensor, value, dataItem) {
   const blob = document.createElement("div");
   blob.classList.add("blob");
   blob.style.background = sensorColors[sensor];
+
   const norm = normalize(value, sensorMin[sensor], sensorMax[sensor]);
-  const size = inline ? 16 + norm * 50 : 30 + norm * 80;
+  const size = 20 + norm * 80; // diamètre variable selon intensité
   blob.style.width = `${size}px`;
   blob.style.height = `${size}px`;
-  blob.style.opacity = 0.5 + norm * 0.5;
-  blob.style.filter = `blur(${4 + norm * 14}px)`;
+  blob.style.opacity = 0.6 + norm * 0.4;
+  blob.style.filter = `blur(${6 + norm * 14}px)`;
+
   const tooltip = createTooltip(dataItem);
   blob.appendChild(tooltip);
   return blob;
 }
 
-// --- MODE A ---
-function startModeA() {
-  gridA.innerHTML = "";
-  const rows = 12, cols = 12;
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const cell = document.createElement("div");
-      cell.classList.add("cell");
-      const blob = document.createElement("div");
-      blob.classList.add("blob");
-      blob.style.background = "#00FF80";
-      blob.style.width = "100%";
-      blob.style.height = "100%";
-      cell.appendChild(blob);
-      gridA.appendChild(cell);
-    }
-  }
-}
+function addCluster(dataItem) {
+  const cluster = document.createElement("div");
+  cluster.classList.add("data-cluster");
 
-// --- MODE B ---
-function setupTimelineRows() {
-  timeline.innerHTML = "";
-  sensorKeys.forEach(() => {
-    const row = document.createElement("div");
-    row.classList.add("timeline-row");
-    timeline.appendChild(row);
-  });
-}
-
-function addTimelineCluster(dataItem) {
-  const rows = timeline.querySelectorAll(".timeline-row");
-  sensorKeys.forEach((key, i) => {
+  sensorKeys.forEach((key) => {
     const val = dataItem[key] ?? 0;
-    const blob = createBlob(key, val, dataItem, true);
-    rows[i].appendChild(blob);
+    const blob = createBlob(key, val, dataItem);
+    cluster.appendChild(blob);
   });
-  containerB.scrollLeft = containerB.scrollWidth;
+
+  timeline.appendChild(cluster);
+  timeline.parentElement.scrollLeft = timeline.scrollWidth; // scroll automatique vers la droite
 }
 
-async function fetchLatestDataB() {
+async function fetchLatestData() {
   try {
-    const res = await fetch("https://server-online-1.onrender.com/sensor");
-    const data = await res.json();
+    const response = await fetch("https://server-online-1.onrender.com/sensor");
+    const data = await response.json();
+
     if (Array.isArray(data) && data.length > 0) {
-      const last = data[data.length - 1];
-      addTimelineCluster(last);
+      const lastItem = data[data.length - 1];
+      addCluster(lastItem);
     }
   } catch (err) {
     console.error("Erreur fetch JSON:", err);
   }
 }
 
-function startModeB() {
-  setupTimelineRows();
-  fetchLatestDataB();
-  intervalId = setInterval(fetchLatestDataB, 5000);
+function startTimelineMode() {
+  timeline.innerHTML = "";
+  fetchLatestData();
+  setInterval(() => {
+    if (currentMode === "B") fetchLatestData();
+  }, 5000);
 }
 
-// --- INIT ---
-switchMode(currentMode);
+if (currentMode === "B") startTimelineMode();
