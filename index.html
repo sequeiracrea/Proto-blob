@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Proto Blob – Mode B (Grille Horizontale)</title>
+  <title>Proto Blob – Timeline horizontale</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <!-- Sélecteur de mode -->
   <select id="modeSelector" class="mode-selector">
     <option value="A">Mode A – AQI global</option>
-    <option value="B" selected>Mode B – Grille horizontale</option>
+    <option value="B" selected>Mode B – Timeline horizontale</option>
     <option value="C">Mode C – Fusion pondérée</option>
   </select>
 
@@ -18,8 +18,10 @@
   <div class="color-burn-layer"></div>
   <div class="color-dodge-layer"></div>
 
-  <!-- Grille horizontale -->
-  <div class="horizontal-grid"></div>
+  <!-- Timeline -->
+  <div class="timeline-container">
+    <div class="timeline"></div>
+  </div>
 
   <script src="script.js" defer></script>
 </body>
