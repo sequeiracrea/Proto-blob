@@ -68,7 +68,7 @@ html, body {
   align-items: center; /* centre verticalement */
   justify-content: flex-start;
   scroll-behavior: smooth;
-  z-index: 2;
+  z-index: 5;
   padding: 0;
 }
 
@@ -80,7 +80,7 @@ html, body {
   grid-template-rows: repeat(6, 8vmin); /* responsive */
   width: 8vmin;
   margin-right: 3vmin;
-  background: #0a0a0a;
+  background: none;
   z-index: 0;
   pointer-events: none;
 }
@@ -98,18 +98,15 @@ html, body {
   z-index: 5; /* au-dessus des calques de fusion */
 }
 
-/* Ajouter plus d’espace après la 2e et 4e ligne pour créer 3 groupes */
-.legends span:nth-child(2),
-.legends span:nth-child(4) {
-  margin-bottom: 2vmin;
-}
+/* Ajouter plus d’espace après la 2e et 4e ligne pour créer 3 groupes distincts */
+
 
 /* Timeline grid pour alignement des blobs */
 .timeline {
   display: grid;
   grid-template-rows: repeat(6, 8vmin); /* même hauteur que légende */
   grid-auto-flow: column;
-  gap: 1vmin; /* légèrement plus serré */
+  gap: 0vmin;
   align-items: center;
 }
 
@@ -172,3 +169,4 @@ html, body {
   }
   .legends { width: 12vw; margin-right: 2vw; }
 }
+
