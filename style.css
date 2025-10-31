@@ -1,24 +1,57 @@
-/* ----- Structure de base ----- */
+/* ----- Reset et structure de base ----- */
 html, body {
   height: 100%;
   margin: 0;
   background: #0a0a0a;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
   font-family: sans-serif;
-  overflow: hidden;
   color: white;
 }
 
-/* ----- Calques de fusion ----- */
-.color-burn-layer,
-.color-dodge-layer {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
+select {
+  margin: 10px 0;
+  padding: 5px 10px;
+  font-size: 1rem;
 }
 
+/* ----- Grille principale ----- */
+.lava-grid {
+  display: grid;
+  width: 90vw;
+  max-width: 1000px;
+  aspect-ratio: 1 / 1;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
+  gap: 0.5vmin;
+  position: relative;
+  z-index: 0;
+}
+
+.cell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* ----- Blobs ----- */
+.blob {
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  transition: background 0.5s, filter 0.5s, opacity 0.5s;
+}
+
+/* ----- Sous-grille mode B (avant calques, si jamais) ----- */
+.sub-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  width: 100%;
+  height: 100%;
+}
+
+/* ----- Calques globaux pour mode B ----- */
 .fusion-layer {
   position: fixed;
   inset: 0;
@@ -36,113 +69,35 @@ html, body {
   mix-blend-mode: color-burn;
 }
 
-/* Reste du CSS inchangé */
-
-
-.color-burn-layer {
-  background: radial-gradient(circle at 30% 30%, #ff0040 0%, transparent 70%),
-              radial-gradient(circle at 70% 70%, #00ffff 0%, transparent 70%);
-  mix-blend-mode: color-burn;
-  opacity: 0.4;
-}
-
-.color-dodge-layer {
-  background: radial-gradient(circle at 50% 50%, #23e6f7 0%, transparent 70%);
-  mix-blend-mode: color-dodge;
-  opacity: 0.3;
-}
-
-/* ----- Menu déroulant ----- */
-#modeSelector {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  background: rgba(20, 20, 20, 0.8);
-  color: white;
-  border: 1px solid #333;
-  border-radius: 6px;
-  padding: 6px 10px;
-  z-index: 10;
-}
-
-/* ----- Grille principale ----- */
-.lava-grid {
-  display: grid;
-  width: 90vmin;
-  max-width: 1000px;
-  aspect-ratio: 1 / 1;
-  grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: repeat(12, 1fr);
-  gap: 0.5vmin;
-}
-
-.cell {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-/* ----- Blobs ----- */
-.blob {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  mix-blend-mode: screen;
-  transition: background 0.5s, filter 0.5s, opacity 0.5s;
-}
-
-/* ----- Sous-grille pour le mode B ----- */
-.sub-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  width: 100%;
-  height: 100%;
-}
-
 /* ----- Légende ----- */
 #legend {
-  position: fixed;
-  bottom: 1rem;
-  left: 1rem;
-  background: rgba(15, 15, 15, 0.6);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 8px;
-  padding: 8px 12px;
-  font-size: 0.8rem;
-  line-height: 1.4;
-  max-width: 260px;
-  z-index: 5;
+  margin-top: 10px;
+  font-size: 0.9rem;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 6px;
   margin-bottom: 2px;
 }
 
 .legend-color {
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
+  margin-right: 5px;
   border-radius: 50%;
-  flex-shrink: 0;
 }
 
 /* ----- Tooltip ----- */
 .tooltip {
-  position: fixed;
-  background: rgba(0,0,0,0.85);
-  color: white;
-  padding: 6px 10px;
-  font-size: 0.75rem;
-  border-radius: 6px;
+  position: absolute;
   pointer-events: none;
-  z-index: 20;
-  white-space: nowrap;
+  background: rgba(0,0,0,0.7);
+  padding: 5px 8px;
+  border-radius: 5px;
+  font-size: 0.8rem;
   opacity: 0;
-  transition: opacity 0.15s;
+  transition: opacity 0.2s;
+  color: white;
+  z-index: 10;
 }
-
