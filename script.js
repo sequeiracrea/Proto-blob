@@ -3,7 +3,6 @@ const realtimeBtn = document.getElementById("realtimeBtn");
 
 // Timeline variables
 const timeline = document.querySelector(".timeline");
-const legendsContainer = document.querySelector(".legends");
 const sensorKeys = ["pm2_5","pm10","nh3","no2","humidity","bmp_temp"];
 const sensorLabels = { pm2_5:"PM2.5", pm10:"PM10", nh3:"NH3", no2:"NO2", humidity:"Humidité", bmp_temp:"Temp."};
 const sensorColors = { pm2_5:"#FF4400", pm10:"#FF8800", nh3:"#FFDD00", no2:"#00FF80", humidity:"#FF00FF", bmp_temp:"#0080FF"};
@@ -28,20 +27,10 @@ pageSelector.addEventListener("change", () => {
   });
 
   if (pageSelector.value === "timeline") startTimelineMode();
-  else if (pageSelector.value === "airQuality") startAirQualityChart();
 });
 
 // ---------- Timeline Functions (inchangées) ----------
 function normalize(v,min,max){return Math.max(0,Math.min(1,(v-min)/(max-min)));}
-
-function generateLegends(){
-  legendsContainer.innerHTML="";
-  sensorKeys.forEach(k=>{
-    const label=document.createElement("span");
-    label.textContent=sensorLabels[k];
-    legendsContainer.appendChild(label);
-  });
-}
 
 function createTooltip(dataItem){
   const tooltip=document.createElement("div");
@@ -93,74 +82,42 @@ async function fetchLatestData(){
     const resp=await fetch("https://server-online-1.onrender.com/sensor");
     const data=await resp.json();
     if(Array.isArray(data) && data.length>0){
-      const lastItem=data[data.length-1];
-      addCluster(lastItem);
+      addCluster(data[data.length-1]);
     }
   }catch(err){console.error("Erreur fetch JSON:",err);}
 }
 
 function startTimelineMode(){
   timeline.innerHTML="";
-  generateLegends();
   fetchLatestData();
   setInterval(()=>{ if(pageSelector.value==="timeline") fetchLatestData(); },5000);
 }
 
-// ---------- Air Quality Chart ----------
+// ---------- Chart.js Initializers ----------
 function startAirQualityChart(){
   if(aqiChart) return;
   const ctx = document.getElementById('aqiChart').getContext('2d');
-  aqiChart = new Chart(ctx, {
-      type: 'line',
-      data: { labels: [], datasets: [
-        { label: 'PM2.5', data: [], borderColor: '#FF4400', backgroundColor: 'rgba(255,68,0,0.3)', fill: true },
-        { label: 'PM10', data: [], borderColor: '#FF8800', backgroundColor: 'rgba(255,136,0,0.3)', fill: true }
-      ]},
-      options: { responsive:true, scales:{ x:{display:true}, y:{beginAtZero:true} } }
+  aqiChart = new Chart(ctx,{
+    type:'line',
+    data:{ labels:[], datasets:[
+      {label:'PM2.5', data:[], borderColor:'#FF4400', backgroundColor:'rgba(255,68,0,0.3)', fill:true},
+      {label:'PM10', data:[], borderColor:'#FF8800', backgroundColor:'rgba(255,136,0,0.3)', fill:true}
+    ]},
+    options:{ responsive:true, scales:{ y:{ beginAtZero:true } } }
   });
-
-  setInterval(async () => {
-    try{
-      const resp=await fetch("https://server-online-1.onrender.com/sensor");
-      const data=await resp.json();
-      if(Array.isArray(data) && data.length>0){
-        const last=data[data.length-1];
-        const now = new Date().toLocaleTimeString();
-        aqiChart.data.labels.push(now);
-        aqiChart.data.datasets[0].data.push(last.pm2_5);
-        aqiChart.data.datasets[1].data.push(last.pm10);
-        if(aqiChart.data.labels.length>20){
-          aqiChart.data.labels.shift();
-          aqiChart.data.datasets[0].data.shift();
-          aqiChart.data.datasets[1].data.shift();
-        }
-        aqiChart.update();
-      }
-    }catch(err){console.error(err);}
-  },5000);
 }
 
-// ---------- Pression Chart ----------
 function startPressureChart(){
   if(pressureChart) return;
   const ctx = document.getElementById('pressureChart').getContext('2d');
-  pressureChart = new Chart(ctx, {
-      type:'line',
-      data:{ labels:[], datasets:[ {label:'Pression hPa', data:[], borderColor:'#00FFFF', fill:false} ] },
-      options:{ responsive:true, scales:{ y:{ beginAtZero:false } } }
-  });
+  pressureChart = new Chart(ctx,{ type:'line', data:{ labels:[], datasets:[{label:'Pression hPa', data:[], borderColor:'#00FFFF', fill:false}] }, options:{ responsive:true } });
 }
 
-// ---------- Humidity Chart ----------
 function startHumidityChart(){
   if(humidityChart) return;
   const ctx = document.getElementById('humidityChart').getContext('2d');
-  humidityChart = new Chart(ctx, {
-      type:'line',
-      data:{ labels:[], datasets:[ {label:'Humidité %', data:[], borderColor:'#FF00FF', fill:false} ] },
-      options:{ responsive:true, scales:{ y:{ beginAtZero:true } } }
-  });
+  humidityChart = new Chart(ctx,{ type:'line', data:{ labels:[], datasets:[{label:'Humidité %', data:[], borderColor:'#FF00FF', fill:false}] }, options:{ responsive:true } });
 }
 
-// Démarrage initial
+// Lancer timeline au départ
 startTimelineMode();
