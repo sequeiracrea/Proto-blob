@@ -42,7 +42,7 @@ html, body {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 3;
+  z-index: 5; /* au-dessus de la timeline */
 }
 
 .color-burn-layer {
@@ -65,60 +65,57 @@ html, body {
   overflow-y: hidden;
   display: flex;
   flex-direction: row;
-  align-items: center; /* centre verticalement */
-  justify-content: flex-start;
+  align-items: center;
   scroll-behavior: smooth;
-  z-index: 5;
   padding: 0;
+  z-index: 3; /* timeline sous calques */
 }
 
-/* Légende flottante */
-.legends {
-  position: sticky;
-  left: 0;
+/* Timeline grid pour alignement des blobs */
+.timeline {
   display: grid;
-  grid-template-rows: repeat(6, 8vmin); /* responsive */
+  grid-template-rows: repeat(6, 8vmin);
+  grid-auto-flow: column;
+  gap: 0vmin;
+  align-items: center;
+  z-index: 3; /* sous calques de fusion */
+}
+
+/* Cluster : chaque blob occupe directement sa ligne dans la grid */
+.data-cluster {
+  display: contents;
+}
+
+/* Légende flottante au-dessus */
+.legends {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  grid-template-rows: repeat(6, 8vmin);
   width: 8vmin;
-  margin-right: 3vmin;
+  height: 100%;
   background: none;
-  z-index: 0;
+  z-index: 10; /* au-dessus des calques */
   pointer-events: none;
 }
 
 .legends span {
   display: flex;
-  align-items: center; /* centré verticalement */
+  align-items: center;
   justify-content: flex-end;
   font-size: 0.8rem;
   color: #fff; /* texte blanc pur */
   text-transform: uppercase;
   user-select: none;
   pointer-events: auto;
-  position: relative;
-  z-index: 5; /* au-dessus des calques de fusion */
-}
-
-/* Ajouter plus d’espace après la 2e et 4e ligne pour créer 3 groupes distincts */
-
-
-/* Timeline grid pour alignement des blobs */
-.timeline {
-  display: grid;
-  grid-template-rows: repeat(6, 8vmin); /* même hauteur que légende */
-  grid-auto-flow: column;
-  gap: 0vmin;
-  align-items: center;
+  padding-right: 4px;
 }
 
 /* Ajouter plus d’espace après la 2e et 4e ligne pour créer 3 groupes */
-.timeline > .data-cluster:nth-child(2),
-.timeline > .data-cluster:nth-child(4) {
+.legends span:nth-child(2),
+.legends span:nth-child(4) {
   margin-bottom: 2vmin;
-}
-
-/* Cluster : chaque blob occupe directement sa ligne dans la grid */
-.data-cluster {
-  display: contents;
 }
 
 /* Blob */
@@ -160,13 +157,12 @@ html, body {
   .timeline, .legends {
     grid-template-rows: repeat(6, 7vmin);
   }
-  .legends { width: 10vmin; margin-right: 2vmin; }
+  .legends { width: 10vmin; }
 }
 
 @media (max-width: 600px) {
   .timeline, .legends {
     grid-template-rows: repeat(6, 6vmin);
   }
-  .legends { width: 12vw; margin-right: 2vw; }
+  .legends { width: 12vw; }
 }
-
