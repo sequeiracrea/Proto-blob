@@ -26,7 +26,6 @@ modeSelector.addEventListener("change", () => {
 });
 
 function switchMode(mode) {
-  // Hide all
   gridA.style.display = "none";
   containerB.style.display = "none";
   layerC.style.display = "none";
@@ -93,7 +92,7 @@ function startModeA() {
   }
 }
 
-// --- MODE B (inline-flex timeline) ---
+// --- MODE B ---
 function setupTimelineRows() {
   timeline.innerHTML = "";
   sensorKeys.forEach(() => {
@@ -110,7 +109,7 @@ function addTimelineCluster(dataItem) {
     const blob = createBlob(key, val, dataItem, true);
     rows[i].appendChild(blob);
   });
-  containerB.scrollLeft = containerB.scrollWidth; // défilement automatique
+  containerB.scrollLeft = containerB.scrollWidth;
 }
 
 async function fetchLatestDataB() {
