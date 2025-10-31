@@ -1,39 +1,34 @@
 const pageSelector = document.getElementById("pageSelector");
-const pages = document.querySelectorAll(".page");
-const timeline = document.querySelector(".timeline");
-const legendsContainer = document.querySelector(".legends");
 const realtimeBtn = document.getElementById("realtimeBtn");
 
+// Timeline variables
+const timeline = document.querySelector(".timeline");
+const legendsContainer = document.querySelector(".legends");
 const sensorKeys = ["pm2_5","pm10","nh3","no2","humidity","bmp_temp"];
 const sensorLabels = { pm2_5:"PM2.5", pm10:"PM10", nh3:"NH3", no2:"NO2", humidity:"Humidité", bmp_temp:"Temp."};
 const sensorColors = { pm2_5:"#FF4400", pm10:"#FF8800", nh3:"#FFDD00", no2:"#00FF80", humidity:"#FF00FF", bmp_temp:"#0080FF"};
 const sensorMin = { pm2_5:0, pm10:0, nh3:0, no2:0, humidity:0, bmp_temp:15 };
 const sensorMax = { pm2_5:50, pm10:80, nh3:2, no2:2, humidity:100, bmp_temp:35 };
-
 let realtime = true;
 
-// Navigation multi-pages
-function showPage(pageId) {
-  pages.forEach(p=>p.style.display="none");
-  document.getElementById(pageId).style.display="block";
+// Chart.js variables
+let aqiChart;
 
-  if(pageId==="timeline") {
-    legendsContainer.style.display="grid";
-    if(realtime) scrollToLastCluster();
-  } else {
-    legendsContainer.style.display="none";
-  }
-}
-
-pageSelector.addEventListener("change", e=>{
-  showPage(e.target.value);
-});
-
-// Timeline fonctions
 realtimeBtn.addEventListener("click", () => {
   realtime = !realtime;
   realtimeBtn.textContent = `Lecture automatique : ${realtime ? "ON" : "OFF"}`;
   if (realtime) scrollToLastCluster();
+});
+
+pageSelector.addEventListener("change", () => {
+  const pages = ["home", "timeline", "airQuality", "pressure", "humidity"];
+  pages.forEach(p => {
+    const el = document.getElementById(p + "Page");
+    if (el) el.style.display = (p === pageSelector.value) ? "block" : "none";
+  });
+
+  if (pageSelector.value === "timeline") startTimelineMode();
+  else if (pageSelector.value === "airQuality") startAirQualityChart();
 });
 
 function normalize(v,min,max){return Math.max(0,Math.min(1,(v-min)/(max-min)));}
@@ -74,9 +69,7 @@ function createBlob(sensor,value,dataItem){
     tooltip.style.left = rect.left + rect.width/2 + "px";
     tooltip.style.top = rect.top + "px";
   });
-  blob.addEventListener("mouseleave", e=>{
-    tooltip.style.opacity=0;
-  });
+  blob.addEventListener("mouseleave", e=>{ tooltip.style.opacity=0; });
 
   return blob;
 }
@@ -109,11 +102,42 @@ function startTimelineMode(){
   timeline.innerHTML="";
   generateLegends();
   fetchLatestData();
-  setInterval(()=>{
-    if(pageSelector.value==="timeline") fetchLatestData();
+  setInterval(()=>{ if(pageSelector.value==="timeline") fetchLatestData(); },5000);
+}
+
+function startAirQualityChart(){
+  if(aqiChart) return; // déjà initialisé
+  const ctx = document.getElementById('aqiChart').getContext('2d');
+  aqiChart = new Chart(ctx, {
+      type: 'line',
+      data: { labels: [], datasets: [
+        { label: 'PM2.5', data: [], borderColor: '#FF4400', backgroundColor: 'rgba(255,68,0,0.3)', fill: true },
+        { label: 'PM10', data: [], borderColor: '#FF8800', backgroundColor: 'rgba(255,136,0,0.3)', fill: true }
+      ]},
+      options: { responsive:true, scales:{ x:{display:true}, y:{beginAtZero:true} } }
+  });
+
+  // Update chart en temps réel
+  setInterval(async () => {
+    try{
+      const resp=await fetch("https://server-online-1.onrender.com/sensor");
+      const data=await resp.json();
+      if(Array.isArray(data) && data.length>0){
+        const last=data[data.length-1];
+        const now = new Date().toLocaleTimeString();
+        aqiChart.data.labels.push(now);
+        aqiChart.data.datasets[0].data.push(last.pm2_5);
+        aqiChart.data.datasets[1].data.push(last.pm10);
+        if(aqiChart.data.labels.length>20){
+          aqiChart.data.labels.shift();
+          aqiChart.data.datasets[0].data.shift();
+          aqiChart.data.datasets[1].data.shift();
+        }
+        aqiChart.update();
+      }
+    }catch(err){console.error(err);}
   },5000);
 }
 
-// Initialisation
-showPage(pageSelector.value);
+// Démarrage
 if(pageSelector.value==="timeline") startTimelineMode();
