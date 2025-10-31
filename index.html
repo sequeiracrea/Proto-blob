@@ -1,29 +1,25 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Proto-blob Boosté</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proto Blob — Modes Visuels</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-  <!-- Calques de fusion globaux -->
+  <!-- Calques visuels -->
   <div class="color-burn-layer"></div>
   <div class="color-dodge-layer"></div>
 
+  <!-- Sélecteur de mode -->
+  <select id="modeSelector">
+    <option value="A">Mode A — AQI global</option>
+    <option value="B">Mode B — 6 sous-blocs capteurs</option>
+    <option value="C" selected>Mode C — Fusion pondérée</option>
+  </select>
+
   <!-- Grille principale -->
   <div class="lava-grid"></div>
-
-  <!-- Légende -->
-  <div class="legend">
-    <div><span style="background:#FF4400"></span> CO</div>
-    <div><span style="background:#23E6F7"></span> CO₂</div>
-    <div><span style="background:#FFDD00"></span> NH₃</div>
-    <div><span style="background:#00FF80"></span> NO₂</div>
-    <div><span style="background:#FF00FF"></span> Humidité</div>
-    <div><span style="background:#0080FF"></span> Température</div>
-  </div>
 
   <script src="script.js" defer></script>
 </body>
