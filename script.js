@@ -70,7 +70,7 @@ function createBlob(sensor,value,dataItem){
 }
 
 function addCluster(dataItem){
-  sensorKeys.forEach((k,i)=>{
+  sensorKeys.forEach(k=>{
     const blob=createBlob(k,dataItem[k]??0,dataItem);
     timeline.appendChild(blob);
   });
