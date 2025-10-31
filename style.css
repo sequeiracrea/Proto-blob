@@ -1,37 +1,25 @@
-/* ----- Variables de couleurs ----- */
-:root {
-  --color-co: #FF4400;
-  --color-co2: #23E6F7;
-  --color-nh3: #FFDD00;
-  --color-no2: #00FF80;
-  --color-humidity: #FF00FF;
-  --color-bmp_temp: #0080FF;
-}
-
-/* ----- Base ----- */
+/* --- Reset & structure --- */
 html, body {
   height: 100%;
   margin: 0;
-  background: #0a0a0a;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: system-ui, sans-serif;
-  color: #ccc;
+  font-family: sans-serif;
+  background: radial-gradient(circle at 50% 50%, #111 0%, #050505 100%);
   overflow: hidden;
 }
 
-/* ----- Grille principale ----- */
+/* --- Grille principale --- */
 .lava-grid {
   display: grid;
   width: 90vw;
   max-width: 1000px;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 1/1;
   grid-template-columns: repeat(12, 1fr);
   grid-template-rows: repeat(12, 1fr);
   gap: 0.5vmin;
-  position: relative;
-  z-index: 2;
+  filter: brightness(1.4) saturate(1.3);
 }
 
 .cell {
@@ -40,86 +28,64 @@ html, body {
   height: 100%;
 }
 
+/* --- Blobs --- */
 .blob {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  mix-blend-mode: screen;
   transition: background 0.5s, filter 0.5s, opacity 0.5s;
-  animation: pulse 6s ease-in-out infinite;
+  mix-blend-mode: screen;
 }
 
-/* Animation douce */
-@keyframes pulse {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); }
-  50% { transform: translate(-50%, -50%) scale(1.05); }
-}
-
-/* ----- Calques de fusion globaux ----- */
-.color-burn-layer,
-.color-dodge-layer {
+/* --- Calques de fusion --- */
+.color-burn-layer, .color-dodge-layer {
   position: fixed;
   inset: 0;
   pointer-events: none;
 }
 
 .color-burn-layer {
-  background: radial-gradient(circle at 30% 30%, #ff0040 0%, transparent 70%),
-              radial-gradient(circle at 70% 70%, #00ffff 0%, transparent 70%);
+  background:
+    radial-gradient(circle at 30% 30%, #ff0040 0%, transparent 70%),
+    radial-gradient(circle at 70% 70%, #00ffff 0%, transparent 70%);
   mix-blend-mode: color-burn;
-  opacity: 0.45;
+  opacity: 0.55;
 }
 
 .color-dodge-layer {
-  background: radial-gradient(circle at 50% 50%, #23e6f7 0%, transparent 70%);
+  background:
+    radial-gradient(circle at 50% 50%, #23e6f7 0%, transparent 70%);
   mix-blend-mode: color-dodge;
-  opacity: 0.3;
+  opacity: 0.45;
 }
 
-/* ----- Légende ----- */
+/* --- Légende --- */
 .legend {
   position: fixed;
-  bottom: 1rem;
-  right: 1rem;
-  background: rgba(10,10,10,0.8);
-  padding: 1rem 1.5rem;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 1rem;
+  background: rgba(20, 20, 20, 0.7);
+  padding: 0.8rem 1.2rem;
   border-radius: 1rem;
+  backdrop-filter: blur(10px);
+  color: white;
   font-size: 0.9rem;
-  z-index: 3;
-  box-shadow: 0 0 15px rgba(0,0,0,0.5);
 }
 
-.legend h2 {
-  margin: 0 0 0.5rem;
-  font-size: 1rem;
-  color: #eee;
-}
-
-.legend ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 0.3rem;
-}
-
-.legend li {
+.legend div {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
-.legend .color {
-  width: 1rem;
-  height: 1rem;
+.legend span {
+  width: 1em;
+  height: 1em;
   border-radius: 50%;
+  display: inline-block;
 }
-
-.legend .color.co { background: var(--color-co); }
-.legend .color.co2 { background: var(--color-co2); }
-.legend .color.nh3 { background: var(--color-nh3); }
-.legend .color.no2 { background: var(--color-no2); }
-.legend .color.humidity { background: var(--color-humidity); }
-.legend .color.bmp_temp { background: var(--color-bmp_temp); }
