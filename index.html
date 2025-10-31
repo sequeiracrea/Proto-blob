@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Prototype Air Quality App</title>
+  <title>Air Quality App – Prototype</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-  <!-- Menu de navigation multi-pages -->
+  <!-- Sélecteur de page -->
   <select id="pageSelector" class="mode-selector">
     <option value="home">Home</option>
     <option value="timeline" selected>Timeline</option>
@@ -18,46 +18,36 @@
     <option value="humidity">Hygrométrie</option>
   </select>
 
-  <!-- Bouton lecture temps réel pour timeline -->
+  <!-- Bouton lecture automatique pour timeline -->
   <button id="realtimeBtn" class="realtime-btn">Lecture automatique : ON</button>
 
-  <!-- Légende flottante, indépendante du conteneur timeline -->
-  <div class="legend-fixed">
-    <span>PM2.5</span>
-    <span>PM10</span>
-    <span>NH3</span>
-    <span>NO2</span>
-    <span>Humidité</span>
-    <span>Temp.</span>
+  <!-- Calques de fusion -->
+  <div class="color-burn-layer"></div>
+  <div class="color-dodge-layer"></div>
+
+  <!-- Pages -->
+  <div id="homePage" class="page">
+    <h1>Bienvenue</h1>
+    <p>Prototype de visualisation de la qualité de l'air et données environnementales.</p>
   </div>
 
-  <!-- PAGE Timeline -->
   <div id="timelinePage" class="page">
-    <!-- Calques de fusion -->
-    <div class="color-burn-layer"></div>
-    <div class="color-dodge-layer"></div>
-
     <div class="timeline-container">
+      <div class="legends"></div>
       <div class="timeline"></div>
     </div>
   </div>
 
-  <!-- PAGE Qualité de l’air -->
-  <div id="airQualityPage" class="page" style="display:none;">
-    <h2>Qualité de l’air – PM2.5 / PM10</h2>
-    <canvas id="aqiChart" style="width:100%; max-width:800px; height:400px;"></canvas>
+  <div id="airQualityPage" class="page chart-page">
+    <canvas id="aqiChart"></canvas>
   </div>
 
-  <!-- PAGE Pression atmosphérique -->
-  <div id="pressurePage" class="page" style="display:none;">
-    <h2>Pression Atmosphérique</h2>
-    <canvas id="pressureChart" style="width:100%; max-width:800px; height:400px;"></canvas>
+  <div id="pressurePage" class="page chart-page">
+    <canvas id="pressureChart"></canvas>
   </div>
 
-  <!-- PAGE Hygrométrie -->
-  <div id="humidityPage" class="page" style="display:none;">
-    <h2>Hygrométrie</h2>
-    <canvas id="humidityChart" style="width:100%; max-width:800px; height:400px;"></canvas>
+  <div id="humidityPage" class="page chart-page">
+    <canvas id="humidityChart"></canvas>
   </div>
 
   <script src="script.js" defer></script>
