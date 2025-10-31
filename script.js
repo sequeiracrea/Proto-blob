@@ -39,6 +39,7 @@ function createTooltip(dataItem){
   const tooltip=document.createElement("div");
   tooltip.classList.add("tooltip");
   tooltip.innerHTML=Object.entries(dataItem).map(([k,v])=>`${k.toUpperCase()}: ${v}`).join("<br>");
+  document.body.appendChild(tooltip);
   return tooltip;
 }
 
@@ -46,21 +47,31 @@ function createBlob(sensor,value,dataItem){
   const blob=document.createElement("div");
   blob.classList.add("blob");
   blob.style.background=sensorColors[sensor];
+
   const norm=normalize(value,sensorMin[sensor],sensorMax[sensor]);
   const size=20+norm*80;
   blob.style.width=`${size}px`;
   blob.style.height=`${size}px`;
   blob.style.opacity=0.6+norm*0.4;
   blob.style.filter=`blur(${6+norm*14}px)`;
+
   const tooltip=createTooltip(dataItem);
-  blob.appendChild(tooltip);
+  blob.addEventListener("mouseenter", e=>{
+    tooltip.style.opacity=1;
+    const rect = blob.getBoundingClientRect();
+    tooltip.style.left = rect.left + rect.width/2 + "px";
+    tooltip.style.top = rect.top + "px";
+  });
+  blob.addEventListener("mouseleave", e=>{
+    tooltip.style.opacity=0;
+  });
+
   return blob;
 }
 
 function addCluster(dataItem){
   sensorKeys.forEach((k,i)=>{
     const blob=createBlob(k,dataItem[k]??0,dataItem);
-    // placer le blob dans la bonne ligne de grid
     timeline.appendChild(blob);
   });
   if(realtime) scrollToLastCluster();
