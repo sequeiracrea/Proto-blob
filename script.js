@@ -1,5 +1,6 @@
 const lavaGrid = document.querySelector('.lava-grid');
 const modeSelector = document.getElementById('modeSelector');
+const legend = document.getElementById('legend');
 
 const rows = 12;
 const cols = 12;
@@ -36,6 +37,37 @@ function valueToBlur(sensor, value, blobSize) {
   return blobSize * 0.05 + norm * blobSize * 0.15;
 }
 
+/* ----- Légendes dynamiques ----- */
+const legends = {
+  A: `
+    <strong>Mode A — AQI Global</strong><br>
+    <div class="legend-item"><div class="legend-color" style="background:#00E400"></div>Air bon</div>
+    <div class="legend-item"><div class="legend-color" style="background:#FFFF00"></div>Modéré</div>
+    <div class="legend-item"><div class="legend-color" style="background:#FF7E00"></div>Mauvais sensible</div>
+    <div class="legend-item"><div class="legend-color" style="background:#FF0000"></div>Mauvais</div>
+    <div class="legend-item"><div class="legend-color" style="background:#8F3F97"></div>Très mauvais</div>
+  `,
+  B: `
+    <strong>Mode B — Capteurs</strong><br>
+    <div class="legend-item"><div class="legend-color" style="background:#FF4400"></div>CO (monoxyde de carbone)</div>
+    <div class="legend-item"><div class="legend-color" style="background:#23E6F7"></div>CO₂ (dioxyde de carbone)</div>
+    <div class="legend-item"><div class="legend-color" style="background:#FFDD00"></div>NH₃ (ammoniac)</div>
+    <div class="legend-item"><div class="legend-color" style="background:#00FF80"></div>NO₂ (dioxyde d’azote)</div>
+    <div class="legend-item"><div class="legend-color" style="background:#FF00FF"></div>Humidité</div>
+    <div class="legend-item"><div class="legend-color" style="background:#0080FF"></div>Température</div>
+  `,
+  C: `
+    <strong>Mode C — Fusion pondérée</strong><br>
+    Couleur = mélange dynamique pondéré des 6 capteurs (CO, CO₂, NH₃, NO₂, humidité, température).<br>
+    Intensité ↗️ = concentration moyenne ↗️
+  `
+};
+
+function updateLegend() {
+  const mode = modeSelector.value;
+  legend.innerHTML = legends[mode];
+}
+
 /* ----- Création de la grille ----- */
 function setupGrid() {
   lavaGrid.innerHTML = '';
@@ -48,16 +80,15 @@ function setupGrid() {
 
 /* ----- Mode A : AQI global ----- */
 function getAQIColor(aqi) {
-  if (aqi <= 50) return '#00E400'; // vert
-  if (aqi <= 100) return '#FFFF00'; // jaune
-  if (aqi <= 150) return '#FF7E00'; // orange
-  if (aqi <= 200) return '#FF0000'; // rouge
-  if (aqi <= 300) return '#8F3F97'; // violet
-  return '#7E0023'; // bordeaux foncé
+  if (aqi <= 50) return '#00E400';
+  if (aqi <= 100) return '#FFFF00';
+  if (aqi <= 150) return '#FF7E00';
+  if (aqi <= 200) return '#FF0000';
+  if (aqi <= 300) return '#8F3F97';
+  return '#7E0023';
 }
 
 function computeAQIFromData(dataItem) {
-  // Exemple simple : moyenne normalisée de tous les capteurs
   const values = sensorKeys.map(k => normalize(dataItem[k] ?? 0, sensorMin[k], sensorMax[k]));
   return values.reduce((a, b) => a + b, 0) / values.length * 300;
 }
@@ -125,7 +156,7 @@ function updateCell(cell, dataItem) {
   }
 }
 
-/* ----- Récupération de données réelles ----- */
+/* ----- Données réelles ----- */
 async function fetchLatestData() {
   try {
     const response = await fetch('https://server-online-1.onrender.com/sensor');
@@ -141,11 +172,13 @@ async function fetchLatestData() {
 
 /* ----- Initialisation ----- */
 setupGrid();
+updateLegend();
 fetchLatestData();
 setInterval(fetchLatestData, 5000);
 
 /* ----- Réactivité ----- */
 modeSelector.addEventListener('change', () => {
   setupGrid();
+  updateLegend();
   currentCellIndex = 0;
 });
