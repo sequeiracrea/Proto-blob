@@ -41,6 +41,29 @@ html, body {
   mix-blend-mode: color-dodge;
 }
 
+/* Légende verticale */
+.legends {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 8vmin;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-end;
+  padding-right: 1vmin;
+  z-index: 5;
+  background: #0a0a0a; /* même couleur que fond */
+}
+
+.legends span {
+  font-size: 0.8rem;
+  color: #bbb;
+  text-transform: uppercase;
+  user-select: none;
+}
+
 /* Timeline globale container */
 .timeline-container {
   position: absolute;
@@ -55,11 +78,11 @@ html, body {
   z-index: 2;
 }
 
-/* Timeline elle-même : inline-flex pour flux horizontal naturel */
+/* Timeline : inline-flex pour flux horizontal naturel */
 .timeline {
-  display: inline-flex;            /* <-- changé : inline-flex */
-  flex-direction: row;             /* colonnes successives */
-  gap: 2px;                        /* <-- changé : gap 2px */
+  display: inline-flex;
+  flex-direction: row;
+  gap: 2px;
   padding-left: 10vmin;
   position: relative;
   align-items: stretch;
@@ -68,12 +91,13 @@ html, body {
 /* Un lot de 6 blobs : colonne verticale (1x6) */
 .data-cluster {
   display: flex;
-  flex-direction: column;          /* colonne : 6 blobs empilés */
+  flex-direction: column;
   align-items: center;
   justify-content: space-between;
   row-gap: 12px;
   padding: 6px;
-  min-width: 64px;                 /* largeur minimale d'une colonne */
+  min-width: 64px;
+  position: relative;
 }
 
 /* Blob */
@@ -83,14 +107,16 @@ html, body {
   transition: all 0.5s ease;
   pointer-events: auto;
   cursor: pointer;
-  display: grid;
-  place-items: center;
+  position: relative;
+  z-index: 3; /* au-dessus du fond */
 }
 
 /* Tooltip */
 .tooltip {
   position: absolute;
-  background: rgba(20, 20, 20, 0.9);
+  top: 0;
+  left: 50%;
+  background: rgba(20, 20, 20, 0.95);
   color: #fff;
   padding: 6px 10px;
   border-radius: 6px;
@@ -100,8 +126,10 @@ html, body {
   transform: translate(-50%, -120%);
   opacity: 0;
   transition: opacity 0.2s ease;
-  z-index: 100;
+  z-index: 10; /* <-- surpasse le blur et le blend */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
+
 .blob:hover .tooltip {
   opacity: 1;
 }
