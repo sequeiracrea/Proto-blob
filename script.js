@@ -1,3 +1,4 @@
+// Sélecteurs
 const pageSelector=document.getElementById("pageSelector");
 const realtimeBtn=document.getElementById("realtimeBtn");
 const timeline=document.querySelector(".timeline");
@@ -12,8 +13,8 @@ const sensorMax={pm2_5:50,pm10:80,nh3:2,no2:2,humidity:100,bmp_temp:35};
 let realtime=true;
 let aqiChart=null,pressureChart=null,humidityChart=null;
 
+// ---------- Navigation ----------
 pageSelector.addEventListener("change",()=>{ showPage(pageSelector.value); });
-
 realtimeBtn.addEventListener("click",()=>{
   realtime=!realtime;
   realtimeBtn.textContent=`Lecture automatique : ${realtime?"ON":"OFF"}`;
@@ -29,7 +30,7 @@ function showPage(page){
   else document.getElementById("homePage").classList.add("active");
 }
 
-// ---------- Timeline functions ----------
+// ---------- Timeline ----------
 function normalize(v,min,max){return Math.max(0,Math.min(1,(v-min)/(max-min)));}
 
 function generateLegends(){
@@ -77,59 +78,22 @@ async function fetchLatestData(){
 
 function startTimelineMode(){ timeline.innerHTML=""; fetchLatestData(); setInterval(()=>{ if(pageSelector.value==="timeline") fetchLatestData(); },5000); }
 
-// ---------- Chart.js functions ----------
-function startAirQualityChart(){
-  if(aqiChart) return;
-  const ctx=document.getElementById("aqiChart").getContext("2d");
-  aqiChart=new Chart(ctx,{
-    type:'line',
-    data:{labels:[],datasets:[
-      {label:'PM2.5',data:[],borderColor:'#FF4400',fill:false},
-      {label:'PM10',data:[],borderColor:'#FF8800',fill:false},
-      {label:'CO2',data:[],borderColor:'#00FFAA',fill:false},
-      {label:'NO2',data:[],borderColor:'#00FF80',fill:false}
-    ]},
-    options:{responsive:true, plugins:{legend:{position:'top'}}}
-  });
-  fetchChartData(aqiChart,['pm2_5','pm10','co2','no2']);
-}
+// ---------- Charts ----------
+function startAirQualityChart(){ if(aqiChart) return; const ctx=document.getElementById("aqiChart").getContext("2d"); aqiChart=new Chart(ctx,{ type:'line', data:{ labels:[], datasets:[
+  {label:'PM2.5',data:[],borderColor:'#FF4400',fill:false},{label:'PM10',data:[],borderColor:'#FF8800',fill:false},
+  {label:'CO2',data:[],borderColor:'#00FFAA',fill:false},{label:'NO2',data:[],borderColor:'#00FF80',fill:false} ] },
+  options:{responsive:true, plugins:{legend:{position:'top'}}} }); fetchChartData(aqiChart,['pm2_5','pm10','co2','no2']); }
 
-function startPressureChart(){
-  if(pressureChart) return;
-  const ctx=document.getElementById("pressureChart").getContext("2d");
-  pressureChart=new Chart(ctx,{
-    type:'line',
-    data:{labels:[],datasets:[{label:'Pression hPa',data:[],borderColor:'#00AAFF',fill:false}]},
-    options:{responsive:true, plugins:{legend:{position:'top'}}}
-  });
-  fetchChartData(pressureChart,['pressure']);
-}
+function startPressureChart(){ if(pressureChart) return; const ctx=document.getElementById("pressureChart").getContext("2d"); pressureChart=new Chart(ctx,{
+  type:'line', data:{labels:[],datasets:[{label:'Pression hPa',data:[],borderColor:'#00AAFF',fill:false}]}, options:{responsive:true,plugins:{legend:{position:'top'}}} });
+  fetchChartData(pressureChart,['pressure']); }
 
-function startHumidityChart(){
-  if(humidityChart) return;
-  const ctx=document.getElementById("humidityChart").getContext("2d");
-  humidityChart=new Chart(ctx,{
-    type:'line',
-    data:{labels:[],datasets:[
-      {label:'Humidité %',data:[],borderColor:'#FF00FF',fill:false},
-      {label:'Temp. °C',data:[],borderColor:'#0080FF',fill:false}
-    ]},
-    options:{responsive:true, plugins:{legend:{position:'top'}}}
-  });
-  fetchChartData(humidityChart,['humidity','bmp_temp']);
-}
+function startHumidityChart(){ if(humidityChart) return; const ctx=document.getElementById("humidityChart").getContext("2d"); humidityChart=new Chart(ctx,{
+  type:'line', data:{labels:[],datasets:[{label:'Humidité %',data:[],borderColor:'#FF00FF',fill:false},{label:'Temp. °C',data:[],borderColor:'#0080FF',fill:false}]}, options:{responsive:true,plugins:{legend:{position:'top'}}} });
+  fetchChartData(humidityChart,['humidity','bmp_temp']); }
 
-async function fetchChartData(chart,keys){
-  try{
-    const resp=await fetch("https://server-online-1.onrender.com/sensor");
-    const data=await resp.json();
-    if(Array.isArray(data)&&data.length>0){
-      chart.data.labels=data.map((d,i)=>i+1);
-      keys.forEach((k,idx)=>{ chart.data.datasets[idx].data=data.map(d=>d[k]??0); });
-      chart.update();
-    }
-  }catch(err){ console.error("Erreur fetch chart JSON:",err); }
-}
+async function fetchChartData(chart,keys){ try{ const resp=await fetch("https://server-online-1.onrender.com/sensor"); const data=await resp.json(); if(Array.isArray(data)&&data.length>0){
+  chart.data.labels=data.map((d,i)=>i+1); keys.forEach((k,idx)=>{ chart.data.datasets[idx].data=data.map(d=>d[k]??0); }); chart.update(); } }catch(err){ console.error("Erreur fetch chart JSON:",err);} }
 
 // ---------- Initial page ----------
 showPage(pageSelector.value);
