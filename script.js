@@ -1,4 +1,5 @@
-const modeSelector = document.getElementById("modeSelector");
+const pageSelector = document.getElementById("pageSelector");
+const pages = document.querySelectorAll(".page");
 const timeline = document.querySelector(".timeline");
 const legendsContainer = document.querySelector(".legends");
 const realtimeBtn = document.getElementById("realtimeBtn");
@@ -9,19 +10,30 @@ const sensorColors = { pm2_5:"#FF4400", pm10:"#FF8800", nh3:"#FFDD00", no2:"#00F
 const sensorMin = { pm2_5:0, pm10:0, nh3:0, no2:0, humidity:0, bmp_temp:15 };
 const sensorMax = { pm2_5:50, pm10:80, nh3:2, no2:2, humidity:100, bmp_temp:35 };
 
-let currentMode = modeSelector.value;
 let realtime = true;
 
+// Navigation multi-pages
+function showPage(pageId) {
+  pages.forEach(p=>p.style.display="none");
+  document.getElementById(pageId).style.display="block";
+
+  if(pageId==="timeline") {
+    legendsContainer.style.display="grid";
+    if(realtime) scrollToLastCluster();
+  } else {
+    legendsContainer.style.display="none";
+  }
+}
+
+pageSelector.addEventListener("change", e=>{
+  showPage(e.target.value);
+});
+
+// Timeline fonctions
 realtimeBtn.addEventListener("click", () => {
   realtime = !realtime;
   realtimeBtn.textContent = `Lecture automatique : ${realtime ? "ON" : "OFF"}`;
   if (realtime) scrollToLastCluster();
-});
-
-modeSelector.addEventListener("change", () => {
-  currentMode = modeSelector.value;
-  if(currentMode === "B") startTimelineMode();
-  else timeline.innerHTML = "";
 });
 
 function normalize(v,min,max){return Math.max(0,Math.min(1,(v-min)/(max-min)));}
@@ -98,8 +110,10 @@ function startTimelineMode(){
   generateLegends();
   fetchLatestData();
   setInterval(()=>{
-    if(currentMode==="B") fetchLatestData();
+    if(pageSelector.value==="timeline") fetchLatestData();
   },5000);
 }
 
-if(currentMode==="B") startTimelineMode();
+// Initialisation
+showPage(pageSelector.value);
+if(pageSelector.value==="timeline") startTimelineMode();
