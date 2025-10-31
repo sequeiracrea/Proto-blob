@@ -74,7 +74,7 @@ html, body {
   position: sticky;
   left: 0;
   display: grid;
-  grid-template-rows: repeat(6, 1fr);
+  grid-template-rows: repeat(6, 8vmin); /* même hauteur que la timeline */
   width: 8vmin;
   margin-right: 6px;
   background: #0a0a0a;
@@ -96,7 +96,7 @@ html, body {
 /* Timeline grid pour alignement des blobs */
 .timeline {
   display: grid;
-  grid-template-rows: repeat(6, 1fr);
+  grid-template-rows: repeat(6, 8vmin); /* hauteur relative à la viewport */
   grid-auto-flow: column;
   gap: 2px;
   align-items: center;
@@ -140,5 +140,6 @@ html, body {
 .blob:hover .tooltip {
   opacity: 1;
 }
+
 
 
