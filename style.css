@@ -13,10 +13,6 @@ html, body { height: 100%; margin: 0; background:#0a0a0a; font-family:sans-serif
 .page { display:none; height:100%; width:100%; padding:2vmin; }
 .page.active { display:block; }
 
-/* ...reset et sélecteurs inchangés... */
-.page { display:none; height:100%; width:100%; padding:2vmin; }
-.page.active { display:block; }
-
 /* Calques de fusion */
 .color-burn-layer, .color-dodge-layer { position:fixed; inset:0; pointer-events:none; z-index:3; }
 .color-burn-layer { background:#ff0040; mix-blend-mode:color-burn; opacity:0.7; }
@@ -35,8 +31,6 @@ html, body { height: 100%; margin: 0; background:#0a0a0a; font-family:sans-serif
 /* Charts */
 .chart-page canvas { width:100% !important; height:100% !important; }
 
-/* Media Queries inchangées */
-
+/* Media Queries */
 @media(max-width:1024px){ .timeline,.legends{grid-template-rows:repeat(6,7vmin);} .legends{width:10vmin; margin-left:1.5vmin;} }
 @media(max-width:600px){ .timeline,.legends{grid-template-rows:repeat(6,6vmin);} .legends{width:12vw; margin-left:1.5vw;} }
-
