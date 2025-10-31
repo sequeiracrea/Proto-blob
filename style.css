@@ -67,14 +67,17 @@ html, body {
   padding: 10vmin 0;
 }
 
-/* Légende verticale : grille pour alignement parfait avec timeline */
+/* Légende flottante */
 .legends {
+  position: sticky;
+  left: 0;
   display: grid;
   grid-template-rows: repeat(6, 1fr);
   width: 8vmin;
   margin-right: 6px;
   background: #0a0a0a;
-  z-index: 5;
+  z-index: 50;
+  pointer-events: none;
 }
 
 .legends span {
@@ -85,9 +88,10 @@ html, body {
   color: #bbb;
   text-transform: uppercase;
   user-select: none;
+  pointer-events: auto;
 }
 
-/* Timeline : grid pour alignement lignes blobs */
+/* Timeline grid pour alignement des blobs */
 .timeline {
   display: grid;
   grid-template-rows: repeat(6, 1fr);
@@ -96,9 +100,9 @@ html, body {
   align-items: center;
 }
 
-/* Cluster : chaque cluster occupe une colonne */
+/* Cluster : chaque blob occupe directement sa ligne dans la grid */
 .data-cluster {
-  display: contents; /* pour placer directement les blobs dans la grid */
+  display: contents;
 }
 
 /* Blob */
@@ -112,12 +116,12 @@ html, body {
   z-index: 3;
 }
 
-/* Tooltip */
+/* Tooltip au-dessus de tout */
 .tooltip {
   position: absolute;
   top: 0;
   left: 50%;
-  background: rgba(20, 20, 20, 0.95);
+  background: rgba(20,20,20,0.95);
   color: #fff;
   padding: 6px 10px;
   border-radius: 6px;
@@ -127,7 +131,7 @@ html, body {
   transform: translate(-50%, -120%);
   opacity: 0;
   transition: opacity 0.2s ease;
-  z-index: 10;
+  z-index: 9999;
   box-shadow: 0 2px 6px rgba(0,0,0,0.5);
 }
 
