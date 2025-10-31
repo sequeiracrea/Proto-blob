@@ -21,6 +21,16 @@
   <!-- Bouton lecture temps réel pour timeline -->
   <button id="realtimeBtn" class="realtime-btn">Lecture automatique : ON</button>
 
+  <!-- Légende flottante, indépendante du conteneur timeline -->
+  <div class="legend-fixed">
+    <span>PM2.5</span>
+    <span>PM10</span>
+    <span>NH3</span>
+    <span>NO2</span>
+    <span>Humidité</span>
+    <span>Temp.</span>
+  </div>
+
   <!-- PAGE Timeline -->
   <div id="timelinePage" class="page">
     <!-- Calques de fusion -->
@@ -28,7 +38,6 @@
     <div class="color-dodge-layer"></div>
 
     <div class="timeline-container">
-      <div class="legends"></div>
       <div class="timeline"></div>
     </div>
   </div>
