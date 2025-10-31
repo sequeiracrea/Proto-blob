@@ -41,17 +41,19 @@ html, body {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 1;
+  z-index: 3;
 }
 
 .color-burn-layer {
-  background: rgba(255, 60, 0, 0.08);
+  background: #ff0040 60%;
   mix-blend-mode: color-burn;
+  opacity: 0.7;
 }
 
 .color-dodge-layer {
-  background: rgba(0, 255, 255, 0.08);
+  background: #23e6f7 60%;
   mix-blend-mode: color-dodge;
+  opacity: 0.4;
 }
 
 /* Timeline container */
@@ -138,3 +140,4 @@ html, body {
 .blob:hover .tooltip {
   opacity: 1;
 }
+
