@@ -42,7 +42,7 @@ html, body {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 5; /* au-dessus de la timeline */
+  z-index: 5;
 }
 
 .color-burn-layer {
@@ -60,15 +60,17 @@ html, body {
 /* Timeline container centrée verticalement */
 .timeline-container {
   position: absolute;
-  inset: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  right: 0;
   overflow-x: auto;
   overflow-y: hidden;
   display: flex;
   flex-direction: row;
-  align-items: center;
   scroll-behavior: smooth;
-  padding: 0;
-  z-index: 3; /* timeline sous calques */
+  padding: 0 10vmin;
+  z-index: 3;
 }
 
 /* Timeline grid pour alignement des blobs */
@@ -78,7 +80,6 @@ html, body {
   grid-auto-flow: column;
   gap: 0vmin;
   align-items: center;
-  z-index: 3; /* sous calques de fusion */
 }
 
 /* Cluster : chaque blob occupe directement sa ligne dans la grid */
@@ -86,18 +87,17 @@ html, body {
   display: contents;
 }
 
-/* Légende flottante au-dessus */
+/* Légende flottante en dehors de la timeline */
 .legends {
-  position: absolute;
+  position: fixed;
+  top: 50%;
   left: 0;
-  top: 0;
+  transform: translateY(-50%);
   display: grid;
   grid-template-rows: repeat(6, 8vmin);
   width: 8vmin;
-  height: 100%;
-  background: none;
-  z-index: 10; /* au-dessus des calques */
   pointer-events: none;
+  z-index: 10;
 }
 
 .legends span {
@@ -105,17 +105,10 @@ html, body {
   align-items: center;
   justify-content: flex-end;
   font-size: 0.8rem;
-  color: #fff; /* texte blanc pur */
+  color: #fff; /* blanc pur */
   text-transform: uppercase;
   user-select: none;
-  pointer-events: auto;
   padding-right: 4px;
-}
-
-/* Ajouter plus d’espace après la 2e et 4e ligne pour créer 3 groupes */
-.legends span:nth-child(2),
-.legends span:nth-child(4) {
-  margin-bottom: 2vmin;
 }
 
 /* Blob */
