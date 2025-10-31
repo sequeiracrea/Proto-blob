@@ -3,25 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Proto Blob – Timeline horizontale</title>
+  <title>Proto Blob – Multi-Mode</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <!-- Sélecteur de mode -->
   <select id="modeSelector" class="mode-selector">
-    <option value="A">Mode A – AQI global</option>
-    <option value="B" selected>Mode B – Timeline horizontale</option>
+    <option value="A" selected>Mode A – AQI global</option>
+    <option value="B">Mode B – Timeline horizontale</option>
     <option value="C">Mode C – Fusion pondérée</option>
   </select>
 
-  <!-- Calques de fusion -->
+  <!-- Calques visuels -->
   <div class="color-burn-layer"></div>
   <div class="color-dodge-layer"></div>
 
-  <!-- Timeline -->
-  <div class="timeline-container">
+  <!-- Conteneurs -->
+  <div class="lava-grid" id="modeA"></div>
+  <div class="timeline-container" id="modeB">
     <div class="timeline"></div>
   </div>
+  <div class="fusion-layer" id="modeC"></div>
 
   <script src="script.js" defer></script>
 </body>
