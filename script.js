@@ -152,16 +152,15 @@ function updateCell(cell, dataItem){
   }
 
   if(mode==='B'){
-    // Efface anciens blobs des calques
-    [fusionScreen, fusionDodge, fusionBurn].forEach(layer => layer.innerHTML='');
-
+    // Ne PAS effacer les calques → cumulatif
     sensorKeys.forEach((k, idx)=>{
       const value = dataItem[k] ?? 0;
-      const blobSize = cellSize / 3; // taille relative mini-blob
+      const blobSize = cellSize / 3;
 
       [fusionScreen, fusionDodge, fusionBurn].forEach(layer => {
         const blob = document.createElement('div');
         blob.classList.add('blob');
+        blob.dataset.sensor = k;
         blob.style.width = `${blobSize}px`;
         blob.style.height = `${blobSize}px`;
         blob.style.background = valueToColor(k);
