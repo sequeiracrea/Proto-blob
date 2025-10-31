@@ -3,15 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Proto Blob – Timeline horizontale</title>
+  <title>Proto Blob – App Qualité de l'air</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Sélecteur de mode -->
-  <select id="modeSelector" class="mode-selector">
-    <option value="A">Mode A – AQI global</option>
-    <option value="B" selected>Mode B – Timeline horizontale</option>
-    <option value="C">Mode C – Fusion pondérée</option>
+  <!-- Sélecteur de page -->
+  <select id="pageSelector" class="mode-selector">
+    <option value="home">Home</option>
+    <option value="timeline" selected>Timeline</option>
+    <option value="airquality">Qualité de l'air</option>
+    <option value="pressure">Pression atmosphérique</option>
+    <option value="humidity">Hygrométrie</option>
   </select>
 
   <!-- Bouton lecture automatique -->
@@ -21,13 +23,38 @@
   <div class="color-burn-layer"></div>
   <div class="color-dodge-layer"></div>
 
-  <!-- Légende flottante en dehors de la timeline -->
+  <!-- Légende flottante (Timeline seulement) -->
   <div class="legends"></div>
 
-  <!-- Timeline -->
-  <div class="timeline-container">
-    <div class="timeline"></div>
-  </div>
+  <!-- Pages -->
+  <section id="home" class="page">
+    <h1>Bienvenue sur l'application Qualité de l'air</h1>
+    <p>Navigation vers timeline et autres indicateurs via le menu déroulant.</p>
+  </section>
+
+  <section id="timeline" class="page">
+    <div class="timeline-container">
+      <div class="timeline"></div>
+    </div>
+  </section>
+
+  <section id="airquality" class="page">
+    <h2>Qualité de l'air</h2>
+    <p>Graphiques synthétiques PM, CO₂, NO₂, indicateur AQI, etc.</p>
+    <div class="placeholder-graph">[Graphiques AQI ici]</div>
+  </section>
+
+  <section id="pressure" class="page">
+    <h2>Pression atmosphérique</h2>
+    <p>Indicateurs de pression actuelle et tendance.</p>
+    <div class="placeholder-graph">[Graphiques pression ici]</div>
+  </section>
+
+  <section id="humidity" class="page">
+    <h2>Hygrométrie</h2>
+    <p>Humidité, point de rosée et température.</p>
+    <div class="placeholder-graph">[Graphiques humidité/température ici]</div>
+  </section>
 
   <script src="script.js" defer></script>
 </body>
