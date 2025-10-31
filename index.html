@@ -9,10 +9,10 @@
 </head>
 <body>
 
-  <!-- Menu de navigation -->
+  <!-- Menu de navigation multi-pages -->
   <select id="pageSelector" class="mode-selector">
-    <option value="home" selected>Home</option>
-    <option value="timeline">Timeline</option>
+    <option value="home">Home</option>
+    <option value="timeline" selected>Timeline</option>
     <option value="airQuality">Qualité de l’air</option>
     <option value="pressure">Pression atmosphérique</option>
     <option value="humidity">Hygrométrie</option>
@@ -21,7 +21,7 @@
   <!-- Bouton lecture temps réel pour timeline -->
   <button id="realtimeBtn" class="realtime-btn">Lecture automatique : ON</button>
 
-  <!-- Timeline page -->
+  <!-- PAGE Timeline -->
   <div id="timelinePage" class="page">
     <!-- Calques de fusion -->
     <div class="color-burn-layer"></div>
@@ -33,22 +33,22 @@
     </div>
   </div>
 
-  <!-- Qualité de l’air page -->
+  <!-- PAGE Qualité de l’air -->
   <div id="airQualityPage" class="page" style="display:none;">
     <h2>Qualité de l’air – PM2.5 / PM10</h2>
     <canvas id="aqiChart" style="width:100%; max-width:800px; height:400px;"></canvas>
   </div>
 
-  <!-- Pression atmosphérique page -->
+  <!-- PAGE Pression atmosphérique -->
   <div id="pressurePage" class="page" style="display:none;">
     <h2>Pression Atmosphérique</h2>
-    <p>Graphiques et indicateurs à venir…</p>
+    <canvas id="pressureChart" style="width:100%; max-width:800px; height:400px;"></canvas>
   </div>
 
-  <!-- Hygrométrie page -->
+  <!-- PAGE Hygrométrie -->
   <div id="humidityPage" class="page" style="display:none;">
     <h2>Hygrométrie</h2>
-    <p>Graphiques et indicateurs à venir…</p>
+    <canvas id="humidityChart" style="width:100%; max-width:800px; height:400px;"></canvas>
   </div>
 
   <script src="script.js" defer></script>
