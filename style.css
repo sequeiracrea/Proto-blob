@@ -3,13 +3,13 @@
 html, body {
   height: 100%;
   margin: 0;
-  background: #0a0a0a;
   font-family: sans-serif;
   overflow: hidden;
+  background: #0a0a0a;
   color: #eee;
 }
 
-/* Sélecteur */
+/* Menu déroulant */
 .mode-selector {
   position: fixed;
   top: 10px;
@@ -36,6 +36,17 @@ html, body {
   cursor: pointer;
 }
 
+/* Pages */
+.page {
+  display: none;
+  height: 100%;
+  width: 100%;
+  padding: 10px;
+  overflow: auto;
+}
+
+.page h1, .page h2 { color: #fff; }
+
 /* Calques de fusion visuelle */
 .color-burn-layer,
 .color-dodge-layer {
@@ -57,7 +68,7 @@ html, body {
   opacity: 0.4;
 }
 
-/* Timeline container centrée verticalement */
+/* Timeline spécifique */
 .timeline-container {
   position: absolute;
   top: 50%;
@@ -73,7 +84,6 @@ html, body {
   z-index: 3;
 }
 
-/* Timeline grid pour alignement des blobs */
 .timeline {
   display: grid;
   grid-template-rows: repeat(6, 8vmin);
@@ -82,36 +92,10 @@ html, body {
   align-items: center;
 }
 
-/* Cluster : chaque blob occupe directement sa ligne dans la grid */
 .data-cluster {
   display: contents;
 }
 
-/* Légende flottante en dehors de la timeline */
-.legends {
-  position: fixed;
-  top: 50%;
-  left: 0;
-  transform: translateY(-50%);
-  display: grid;
-  grid-template-rows: repeat(6, 8vmin);
-  width: 8vmin;
-  pointer-events: none;
-  z-index: 10;
-}
-
-.legends span {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  font-size: 0.8rem;
-  color: #fff; /* blanc pur */
-  text-transform: uppercase;
-  user-select: none;
-  padding-right: 4px;
-}
-
-/* Blob */
 .blob {
   border-radius: 50%;
   mix-blend-mode: screen;
@@ -122,7 +106,6 @@ html, body {
   z-index: 3;
 }
 
-/* Tooltip au-dessus de tout */
 .tooltip {
   position: absolute;
   top: 0;
@@ -145,17 +128,34 @@ html, body {
   opacity: 1;
 }
 
-/* Media queries pour tablette et smartphone */
-@media (max-width: 1024px) {
-  .timeline, .legends {
-    grid-template-rows: repeat(6, 7vmin);
-  }
-  .legends { width: 10vmin; }
+/* Légende Timeline */
+.legends {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  display: grid;
+  grid-template-rows: repeat(6, 8vmin);
+  width: 8vmin;
+  pointer-events: none;
+  z-index: 10;
 }
 
-@media (max-width: 600px) {
-  .timeline, .legends {
-    grid-template-rows: repeat(6, 6vmin);
-  }
-  .legends { width: 12vw; }
+.legends span {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 0.8rem;
+  color: #fff;
+  text-transform: uppercase;
+  user-select: none;
+  padding-right: 4px;
+}
+
+/* Placeholder pour autres pages */
+.placeholder-graph {
+  height: 300px;
+  background: #222;
+  border-radius: 8px;
+  margin-top: 10px;
 }
