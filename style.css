@@ -19,6 +19,26 @@ html, body {
   pointer-events: none;
 }
 
+.fusion-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.screen {
+  mix-blend-mode: screen;
+}
+.color-dodge {
+  mix-blend-mode: color-dodge;
+}
+.color-burn {
+  mix-blend-mode: color-burn;
+}
+
+/* Reste du CSS inchangé */
+
+
 .color-burn-layer {
   background: radial-gradient(circle at 30% 30%, #ff0040 0%, transparent 70%),
               radial-gradient(circle at 70% 70%, #00ffff 0%, transparent 70%);
@@ -125,3 +145,4 @@ html, body {
   opacity: 0;
   transition: opacity 0.15s;
 }
+
