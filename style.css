@@ -1,4 +1,5 @@
 * { box-sizing: border-box; }
+
 html, body {
   height: 100%;
   margin: 0;
@@ -56,7 +57,7 @@ html, body {
   opacity: 0.4;
 }
 
-/* Timeline container */
+/* Timeline container centrée verticalement */
 .timeline-container {
   position: absolute;
   inset: 0;
@@ -64,9 +65,11 @@ html, body {
   overflow-y: hidden;
   display: flex;
   flex-direction: row;
+  align-items: center; /* centre verticalement */
+  justify-content: flex-start;
   scroll-behavior: smooth;
   z-index: 2;
-  padding: 10vmin 0;
+  padding: 0;
 }
 
 /* Légende flottante */
@@ -74,9 +77,9 @@ html, body {
   position: sticky;
   left: 0;
   display: grid;
-  grid-template-rows: repeat(6, 8vmin); /* même hauteur que la timeline */
+  grid-template-rows: repeat(6, 8vmin); /* responsive */
   width: 8vmin;
-  margin-right: 6px;
+  margin-right: 3vmin;
   background: #0a0a0a;
   z-index: 0;
   pointer-events: none;
@@ -96,9 +99,9 @@ html, body {
 /* Timeline grid pour alignement des blobs */
 .timeline {
   display: grid;
-  grid-template-rows: repeat(6, 8vmin); /* hauteur relative à la viewport */
+  grid-template-rows: repeat(6, 8vmin); /* même hauteur que légende */
   grid-auto-flow: column;
-  gap: 2px;
+  gap: 1vmin; /* légèrement plus serré */
   align-items: center;
 }
 
@@ -141,5 +144,17 @@ html, body {
   opacity: 1;
 }
 
+/* Media queries pour tablette et smartphone */
+@media (max-width: 1024px) {
+  .timeline, .legends {
+    grid-template-rows: repeat(6, 7vmin);
+  }
+  .legends { width: 10vmin; margin-right: 2vmin; }
+}
 
-
+@media (max-width: 600px) {
+  .timeline, .legends {
+    grid-template-rows: repeat(6, 6vmin);
+  }
+  .legends { width: 12vw; margin-right: 2vw; }
+}
