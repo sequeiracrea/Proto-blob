@@ -77,15 +77,11 @@ html, body {
   position: sticky;
   left: 0;
   display: grid;
-  /* grid-template-rows ajustée pour les regroupements avec espace */
-  grid-template-rows:
-    8vmin 8vmin 2vmin
-    8vmin 8vmin 2vmin
-    8vmin 8vmin;
+  grid-template-rows: repeat(6, 8vmin); /* responsive */
   width: 8vmin;
   margin-right: 3vmin;
   background: #0a0a0a;
-  z-index: 5; /* au-dessus des calques de fusion */
+  z-index: 0;
   pointer-events: none;
 }
 
@@ -98,19 +94,29 @@ html, body {
   text-transform: uppercase;
   user-select: none;
   pointer-events: auto;
+  position: relative;
+  z-index: 5; /* au-dessus des calques de fusion */
+}
+
+/* Ajouter plus d’espace après la 2e et 4e ligne pour créer 3 groupes */
+.legends span:nth-child(2),
+.legends span:nth-child(4) {
+  margin-bottom: 2vmin;
 }
 
 /* Timeline grid pour alignement des blobs */
 .timeline {
   display: grid;
-  /* même structure que la légende pour alignement parfait */
-  grid-template-rows:
-    8vmin 8vmin 2vmin
-    8vmin 8vmin 2vmin
-    8vmin 8vmin;
+  grid-template-rows: repeat(6, 8vmin); /* même hauteur que légende */
   grid-auto-flow: column;
-  gap: 1vmin; /* légèrement plus serré horizontalement */
+  gap: 1vmin; /* légèrement plus serré */
   align-items: center;
+}
+
+/* Ajouter plus d’espace après la 2e et 4e ligne pour créer 3 groupes */
+.timeline > .data-cluster:nth-child(2),
+.timeline > .data-cluster:nth-child(4) {
+  margin-bottom: 2vmin;
 }
 
 /* Cluster : chaque blob occupe directement sa ligne dans la grid */
@@ -155,20 +161,14 @@ html, body {
 /* Media queries pour tablette et smartphone */
 @media (max-width: 1024px) {
   .timeline, .legends {
-    grid-template-rows:
-      7vmin 7vmin 1.5vmin
-      7vmin 7vmin 1.5vmin
-      7vmin 7vmin;
+    grid-template-rows: repeat(6, 7vmin);
   }
   .legends { width: 10vmin; margin-right: 2vmin; }
 }
 
 @media (max-width: 600px) {
   .timeline, .legends {
-    grid-template-rows:
-      6vmin 6vmin 1vmin
-      6vmin 6vmin 1vmin
-      6vmin 6vmin;
+    grid-template-rows: repeat(6, 6vmin);
   }
   .legends { width: 12vw; margin-right: 2vw; }
 }
