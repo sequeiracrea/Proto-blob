@@ -1,5 +1,5 @@
 * { box-sizing: border-box; }
-html, body { height: 100%; margin: 0; background:#0a0a0a; font-family:sans-serif; overflow:hidden; color:#eee; }
+html, body { height: 100%; margin: 0; background:#ffffff; font-family:sans-serif; overflow:hidden; color:#eee; }
 
 /* Sélecteur et bouton */
 .mode-selector, .realtime-btn {
@@ -34,4 +34,5 @@ html, body { height: 100%; margin: 0; background:#0a0a0a; font-family:sans-serif
 /* Media Queries */
 @media(max-width:1024px){ .timeline,.legends{grid-template-rows:repeat(6,7vmin);} .legends{width:10vmin; margin-left:1.5vmin;} }
 @media(max-width:600px){ .timeline,.legends{grid-template-rows:repeat(6,6vmin);} .legends{width:12vw; margin-left:1.5vw;} }
+
 
