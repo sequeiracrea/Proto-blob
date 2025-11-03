@@ -15,8 +15,8 @@ html, body { height: 100%; margin: 0; background:#0a0a0a; font-family:sans-serif
 
 /* Calques de fusion */
 .color-burn-layer, .color-dodge-layer { position:fixed; inset:0; pointer-events:none; z-index:3; }
-.color-burn-layer { background:#ff0040; mix-blend-mode:color-burn; opacity:0.7; }
-.color-dodge-layer { background:#23e6f7; mix-blend-mode:color-dodge; opacity:0.4; }
+.color-burn-layer { background:#0E68DE 60%; mix-blend-mode:color-burn; opacity:0.7; }
+.color-dodge-layer { background:#FF4400 60%; mix-blend-mode:color-dodge; opacity:0.4; }
 
 /* Timeline */
 .timeline-container { position:absolute; inset:0; overflow-x:auto; overflow-y:hidden; display:flex; flex-direction:row; align-items:center; justify-content:flex-start; scroll-behavior:smooth; z-index:2; padding:0; }
@@ -34,3 +34,4 @@ html, body { height: 100%; margin: 0; background:#0a0a0a; font-family:sans-serif
 /* Media Queries */
 @media(max-width:1024px){ .timeline,.legends{grid-template-rows:repeat(6,7vmin);} .legends{width:10vmin; margin-left:1.5vmin;} }
 @media(max-width:600px){ .timeline,.legends{grid-template-rows:repeat(6,6vmin);} .legends{width:12vw; margin-left:1.5vw;} }
+
