@@ -6,7 +6,10 @@ html, body { height: 100%; margin: 0; background:#ffffff; font-family:sans-serif
   height: 120px;
   border-radius: 50%;
   background: #00aaff;
-  transition: all 0.3s ease;
+  transition: all 0.1s linear;
+  position: absolute; /* <- nécessaire pour le déplacer avec left/top */
+  top: 0;
+  left: 0;
 }
 
 /* Sélecteur et bouton */
@@ -42,6 +45,7 @@ html, body { height: 100%; margin: 0; background:#ffffff; font-family:sans-serif
 /* Media Queries */
 @media(max-width:1024px){ .timeline,.legends{grid-template-rows:repeat(6,7vmin);} .legends{width:10vmin; margin-left:1.5vmin;} }
 @media(max-width:600px){ .timeline,.legends{grid-template-rows:repeat(6,6vmin);} .legends{width:12vw; margin-left:1.5vw;} }
+
 
 
 
