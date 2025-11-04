@@ -1,3 +1,23 @@
+// Écoute les messages provenant de ProtoPie
+window.addEventListener("message", (event) => {
+  const data = event.data;
+  if (!data || !data.name) return;
+
+  if (data.name === "change_color") {
+    document.getElementById("circle").style.background = data.color;
+  }
+
+  if (data.name === "resize_circle") {
+    document.getElementById("circle").style.width = data.size + "px";
+    document.getElementById("circle").style.height = data.size + "px";
+  }
+
+  // Exemple de message renvoyé vers ProtoPie
+  if (data.name === "ping") {
+    window.parent.postMessage({ name: "pong", msg: "Circle is alive!" }, "*");
+  }
+});
+
 // ------------------ Sélecteurs ------------------
 const pageSelector=document.getElementById("pageSelector");
 const realtimeBtn=document.getElementById("realtimeBtn");
@@ -171,4 +191,5 @@ if(!fetchInterval){
 
 // ------------------ Initial page ------------------
 showPage(pageSelector.value);
+
 
