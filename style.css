@@ -1,6 +1,14 @@
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; background:#ffffff; font-family:sans-serif; overflow:hidden; color:#eee; }
 
+#circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #00aaff;
+  transition: all 0.3s ease;
+}
+
 /* Sélecteur et bouton */
 .mode-selector, .realtime-btn {
   position: fixed; right: 10px; background:#111; color:#fff; border:1px solid #333;
@@ -34,5 +42,6 @@ html, body { height: 100%; margin: 0; background:#ffffff; font-family:sans-serif
 /* Media Queries */
 @media(max-width:1024px){ .timeline,.legends{grid-template-rows:repeat(6,7vmin);} .legends{width:10vmin; margin-left:1.5vmin;} }
 @media(max-width:600px){ .timeline,.legends{grid-template-rows:repeat(6,6vmin);} .legends{width:12vw; margin-left:1.5vw;} }
+
 
 
