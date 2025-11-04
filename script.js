@@ -18,6 +18,22 @@ window.addEventListener("message", (event) => {
   }
 });
 
+const circle = document.getElementById("circle");
+
+document.addEventListener("mousemove", (e) => {
+  // Déplacer le cercle dans le Web Embed
+  circle.style.left = `${e.clientX - circle.offsetWidth / 2}px`;
+  circle.style.top = `${e.clientY - circle.offsetHeight / 2}px`;
+
+  // Envoyer les coordonnées à ProtoPie
+  window.parent.postMessage({
+    name: "circle_move",
+    x: e.clientX,
+    y: e.clientY
+  }, "*");
+});
+
+
 // ------------------ Sélecteurs ------------------
 const pageSelector=document.getElementById("pageSelector");
 const realtimeBtn=document.getElementById("realtimeBtn");
@@ -191,5 +207,6 @@ if(!fetchInterval){
 
 // ------------------ Initial page ------------------
 showPage(pageSelector.value);
+
 
 
