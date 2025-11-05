@@ -2,16 +2,17 @@
 html, body { height: 100%; margin: 0; background:#ffffff; font-family:sans-serif; overflow:hidden; color:#eee; }
 
 #circle {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background: #FF15B1;
-  transition: all 0.1s linear;
-  /*  position: absolute;<- nécessaire pour le déplacer avec left/top */
-  position: relative;
-  z-index:3; 
-  top: 0;
-  left: 0;
+width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgb(0, 128, 255);
+    transition: all 0.1s linear;
+    position: absolute;
+    z-index: 3;
+    /* top: 0; */
+    /* left: 0; */
+    opacity: 80%;
+    filter: blur(15px);
 }
 
 /* Sélecteur et bouton */
@@ -47,6 +48,7 @@ html, body { height: 100%; margin: 0; background:#ffffff; font-family:sans-serif
 /* Media Queries */
 @media(max-width:1024px){ .timeline,.legends{grid-template-rows:repeat(6,7vmin);} .legends{width:10vmin; margin-left:1.5vmin;} }
 @media(max-width:600px){ .timeline,.legends{grid-template-rows:repeat(6,6vmin);} .legends{width:12vw; margin-left:1.5vw;} }
+
 
 
 
